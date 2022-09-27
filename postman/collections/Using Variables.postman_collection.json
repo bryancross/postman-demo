@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "cc786a6b-a4e1-486d-b3bc-641a2b73268a",
+		"name": "Using Variables",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21868609"
+	},
+	"item": [
+		{
+			"name": "Set Variable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"    pm.collectionVariables.set(\"demoVar\", pm.response.json().value);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"demoVar\",\"<initial value>\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/demo",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"demo"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Set Variable",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{demoUrl}}/demo",
+							"host": [
+								"{{demoUrl}}"
+							],
+							"path": [
+								"demo"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"value\":\"{{$randomBankAccount}}\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Consume Variable",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"consumedVariable\":\"{{demoVar}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/useVar?demoVar={{demoVar}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"useVar"
+					],
+					"query": [
+						{
+							"key": "demoVar",
+							"value": "{{demoVar}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Consume Variable",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"consumedVariable\":\"{{demoVar}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{demoURL}}/useVar?demoVar=foo",
+							"host": [
+								"{{demoURL}}"
+							],
+							"path": [
+								"useVar"
+							],
+							"query": [
+								{
+									"key": "demoVar",
+									"value": "foo"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": "{\n    \"result\":\"success\"\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{postmanapikey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-api-key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Variable1",
+			"value": "foo",
+			"type": "string"
+		},
+		{
+			"key": "Variable2",
+			"value": "bar",
+			"type": "string"
+		},
+		{
+			"key": "demoVar",
+			"value": ""
+		},
+		{
+			"key": "postmanapikey",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

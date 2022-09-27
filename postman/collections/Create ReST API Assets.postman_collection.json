@@ -1,0 +1,1096 @@
+{
+	"info": {
+		"_postman_id": "ef22cc18-d8ca-4d7e-a2d1-f238b9f5df62",
+		"name": "Create ReST API Assets",
+		"description": "# Create Rest Assets\n\nStandardizing practices & process automation by\n\n*   Automating controls\n*   Enforcing standards\n*   Generating evidence\n    \n\n![](https://i.imgur.com/9E9b8gf.png)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21868609"
+	},
+	"item": [
+		{
+			"name": "Automate API assets",
+			"item": [
+				{
+					"name": "Fetch Schema from GItHub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(pm.response.text());",
+									"var base64content = jsonData.content;",
+									"var buff = new Buffer(base64content, 'base64');",
+									"var content = buff.toString('ascii');",
+									"let schemaJSON = JSON.stringify(JSON.parse(buff.toString('ascii'))); ",
+									"pm.collectionVariables.set(\"string_schema\",  (JSON.stringify(schemaJSON)).substr(1).slice(0, -1));",
+									"pm.collectionVariables.set(\"schemaTitle\",JSON.parse(content).info.title);",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"UID_lintingCollection\",\"\");",
+									"pm.collectionVariables.set(\"UID_apiVersion\",\"\");",
+									"pm.collectionVariables.set(\"UID_API\",\"\");",
+									"pm.collectionVariables.set(\"UID_schema\",\"\");",
+									"pm.collectionVariables.set(\"string_schema\",\"\");",
+									"pm.collectionVariables.set(\"schemaJSON\",\"\");",
+									"pm.collectionVariables.set(\"UID_lintingMonitor\",\"\");",
+									"pm.collectionVariables.set(\"lintingSchema\",\"\");",
+									"pm.collectionVariables.set(\"baseUrl\",\"\");",
+									"pm.collectionVariables.set(\"UID_environment\",\"\");",
+									"pm.collectionVariables.set(\"UID_monitor\",\"\");",
+									"pm.collectionVariables.set(\"UID_mock\",\"\");",
+									"pm.collectionVariables.set(\"URL_mock\",\"\");",
+									"pm.collectionVariables.set(\"UID_collection\",\"\");",
+									"pm.collectionVariables.set(\"randomInt\",\"\");",
+									"pm.collectionVariables.set(\"schemaTitle\",\"\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{GitHubPAT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{GitHubBaseURL}}/repos/{{GitHubRepoSlug}}/contents/{{GitHubRepoPath}}/{{GitHubSchemaFilename}}",
+							"host": [
+								"{{GitHubBaseURL}}"
+							],
+							"path": [
+								"repos",
+								"{{GitHubRepoSlug}}",
+								"contents",
+								"{{GitHubRepoPath}}",
+								"{{GitHubSchemaFilename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Should have valid response\", function () {",
+									"    pm.expect(jsonData.api).to.include.all.keys('id', 'name', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy');",
+									"    ",
+									"    // pm.expect(jsonData.api.name).to.be.equal('New API');",
+									"    pm.expect(jsonData.api.id).to.be.ok;",
+									"    pm.expect(jsonData.api.createdAt).to.be.ok;",
+									"    pm.expect(jsonData.api.createdBy).to.be.ok;",
+									"    pm.expect(jsonData.api.updatedAt).to.be.ok;",
+									"    pm.expect(jsonData.api.updatedBy).to.be.ok;",
+									"});",
+									"",
+									"",
+									"// Make sure you have an environment selected before enabling the following line",
+									"pm.collectionVariables.set('UID_API', jsonData.api.id); "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function randomIntFromInterval(min, max) { // min and max included ",
+									"  return Math.floor(Math.random() * (max - min + 1) + min);",
+									"}",
+									"",
+									"const rndInt = randomIntFromInterval(1, 99);",
+									"pm.collectionVariables.set('randomInt',rndInt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"name": "Content-Type",
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"api\": {\n\t\t\"name\": \"{{schemaTitle}} - {{randomInt}}\",\n\t\t\"summary\": \"{{$randomJobTitle}}\",\n\t\t\"description\": \"{{$randomJobDescriptor}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This call creates a new API with a default API Version.  \n\nRequest body should contain an `api` object which should atleast have a property `name`.\n\nResponse contains an `api` object with all the details related to the created API, namely, `id`, `name`, `summary`, `description`, etc. \n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All API Versions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"// Set the DRAFT versionId as an env variable",
+									"pm.collectionVariables.set('UID_apiVersion', jsonData.versions[0].id)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions"
+							]
+						},
+						"description": "This call fetches details about the all the API Versions in the specified API.\n\nThe response will contain an array `versions` object which would be a list of all the API Version along with their details.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Schema",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the UID_schema in the env variable",
+									"pm.collectionVariables.set('UID_schema', jsonData.schema.id)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"name": "Content-Type",
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"schema\": {\n\t\t\"language\": \"json\",\n\t\t\"schema\":\"{{string_schema}}\",\n\t\t\"type\": \"openapi3\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"schemas"
+							]
+						},
+						"description": "Creates a schema. The request body must contain a `schema` object with the following properties:\n\n*   `type` — A **string** value that contains the schema's type. One of:\n    *   `openapi3_1`\n    *   `openapi3`\n    *   `openapi2`\n    *   `openapi1`\n    *   `raml`\n    *   `raml1`\n    *   `wsdl1`\n    *   `wsdl2`\n    *   `graphql`\n    *   `proto2`\n    *   `graphql`\n    *   `proto3`\n*   `language` — A **string** value that contains the schema's language. One of:\n    *   OpenAPI and RAML — `json` or `yaml`\n    *   GraphQL — `graphql`\n    *   WSDL — `xml`\n    *   Protobuf — `proto`\n*   `schema` — Optional. A **string** value that contains the schema's contents.\n    \n\n> Requires an API Key as the `X-Api-Key` request header or an `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create collection from schema",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the colllectionId in the env variable",
+									"pm.collectionVariables.set('UID_collection', jsonData.collection.uid)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let randomInt = pm.collectionVariables.get(\"randomInt\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{schemaTitle}} - {{randomInt}}\",\n\t\"relations\": [\n\t\t{\n\t\t\t\"type\": \"documentation\"\n        },\n        {\n            \"type\": \"integrationtest\"\n        },\n        {\n            \"type\": \"testsuite\"\n\t\t}\t\n\t]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas/{{UID_schema}}/collections?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"schemas",
+								"{{UID_schema}}",
+								"collections"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This call creates a collection and links it to an API as one or multiple relations. \n\nRequest body requires two keys:\n- `name` - Name of the collection to be created.\n- `relations` - A list of relation(s) to be created.\n\nThe allowed relation types are `contracttest`, `integrationtest`, `testsuite`, and `documentation`.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Mock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the URL_mock in the env variable",
+									"pm.collectionVariables.set('URL_mock', jsonData.mock.mockUrl);",
+									"pm.collectionVariables.set('UID_mock', jsonData.mock.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let randomInt = pm.collectionVariables.get(\"randomInt\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"mock\": {\n        \"name\": \"{{schemaTitle}} - {{randomInt}}\",\n\t\t\"collection\": \"{{UID_collection}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/mocks?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"mocks"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to create a mock on a collection. You can also provide an environment UID to resolve any environment variables in the collection.\n\nYou can also specify the context of a workspace to create a mock in directly by passing the `workspace` as a query param.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Environment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the environmentID in the env variable",
+									"pm.collectionVariables.set('UID_environment', jsonData.environment.uid);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let randomInt = pm.collectionVariables.get(\"randomInt\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"environment\": {\n        \"name\": \"{{schemaTitle}} -{{randomInt}}\",\n        \"values\": [\n            {\n                \"key\": \"baseUrl\",\n                \"value\": \"{{URL_mock}}\"\n            }\n            ,{\n                \"key\":\"UID_API\"\n                ,\"value\":\"{{UID_API}}\"\n            }\n            ,{\n                \"key\":\"UID_apiVersion\"\n                ,\"value\":\"{{UID_apiVersion}}\"\n            }\n            ,{\n                \"key\":\"UID_schema\"\n                ,\"value\":\"{{UID_schema}}\"\n            }\n            ,{\n                \"key\":\"UID_lintingMonitor\"\n                ,\"value\":\"{{UID_lintingMonitor}}\"\n            }\n            ,{\n                \"key\":\"UID_lintingCollection\"\n                ,\"value\":\"{{UID_lintingCollection}}\"\n            }\n            ,{\n                \"key\":\"UID_environment\"\n                ,\"value\":\"{{UID_environment}}\"\n            }\n            ,{\n                \"key\":\"UID_monitor\"\n                ,\"value\":\"{{UID_monitor}}\"\n            }\n            ,{\n                \"key\":\"UID_mock\"\n                ,\"value\":\"{{UID_mock}}\"\n            }\n            ,{\n                \"key\":\"UID_collection\"\n                ,\"value\":\"{{UID_collection}}\"\n            }\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/environments?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"environments"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "A sample body is added to the request that conforms to the following JSON schema:\n\n```json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"environment\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"name\": {\n              \"type\": \"string\",\n              \"maxLength\": 254,\n              \"minLength\": 1\n            },\n        \"values\": {\n          \"type\": \"array\",\n          \"maxItems\": 100,\n          \"additionalItems\": false,\n          \"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"key\": {\n                  \"type\": \"string\",\n                  \"maxLength\": 254\n                  \"minLength\": 1\n                },\n                \"value\": { \"type\": \"string\" },\n                \"enabled\": { \"type\": \"boolean\" }\n              },\n              \"required\": [\"key\", \"value\"]\n            }\n        }\n      },\n      \"required\": [\"name\"]\n    }\n  },\n  \"required\": [\"environment\"]\n}\n```\n\nOn successful creation of the environment, the API returns the environment name and `id`.\n\nYou can also specify the context of a workspace to create an environment in directly by passing the `workspace` as a query param.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Monitor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the environmentID in the env variable",
+									"pm.collectionVariables.set('UID_monitor', jsonData.monitor.uid)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let randomInt = pm.collectionVariables.get(\"randomInt\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monitor\": {\n    \"name\": \"{{schemaTitle}} monitor - {{randomInt}}\",\n    \"schedule\": {\n      \"cron\": \"*/5 * * * *\",\n      \"timezone\": \"America/Cancun\"\n    },\n    \"collection\": \"{{UID_collection}}\",\n    \"environment\": \"{{UID_environment}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/monitors?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"monitors"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to create a monitor.\n\nSome sample `cron` values are:\n\n| Frequency                  | Cron Pattern   |\n|-----------------------|----------------|\n| Every 5 minutes       | `*/5 * * * *`  |\n| Every 30 minutes     | `*/30 * * * *` |\n| Every Hour         | `0 */1 * * *`  |\n| Every 6 Hours      | `0 */6 * * *`  |\n| Every day at 5pm    | `0 17 * * *`   |\n| Every Monday at 12pm  | `0 12 * * MON` |\n| Every weekday (Monday - Friday) at 6am | `0 6 * * MON-FRI` |\n\nNote: Currently, you can only create monitors at some limited schedules. You can head to [Postman Monitors](https://monitor.getpostman.com) to see the allowed schedules. \n\nFor more information about the format of the `timezone` value, check this [list of time zones.](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n\nYou can also specify the context of a workspace to create a monitor in directly by passing the `workspace` as a query param.\n\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Relations",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"mock\" : [\"{{UID_mock}}\"],\n    \"monitor\": [\"{{UID_monitor}}\"],\n    \"environment\" : [\"{{UID_environment}}\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/relations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"relations"
+							]
+						},
+						"description": "This call allows you to add existing Postman entities as new relations to an API. The request body should contain the relations to be created along with an array of entity IDs. \n\n<table>\n  <tr>\n    <th>Relation</th>\n    <th>Entity ID type</th>\n  <tr>\n  <tr>\n    <td>contracttest</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>integrationtest</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>documentation</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>testsuite</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>environment</td>\n    <td>Environment UIDs</td>\n  </tr>\n  <tr>\n    <td>mock</td>\n    <td>Mock IDs</td>\n  </tr>\n  <tr>\n    <td>monitor</td>\n    <td>Monitor IDs</td>\n  </tr>\n</table>\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				}
+			],
+			"description": "#### What are we doing here?\n\nImproving Developer Experience: **Automating** the process of setting up a Postman environment to allow developers to start building, testing and documenting APIs.\n\n1.  APIs must have documentation\n2.  APIs must have tests\n3.  APIs must have observability\n4.  Mock Servers help developers, QA, front end engineers quickly understand how the API functions.\n    \n\n![](https://i.imgur.com/UGJzFzW.png)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Enforce OAS standards",
+			"item": [
+				{
+					"name": "Fetch the schema",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the URL_mock in the env variable",
+									"pm.collectionVariables.set('lintingSchema', JSON.stringify(jsonData.schema.schema));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas/{{UID_schema}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"schemas",
+								"{{UID_schema}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Linting Collection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"console.log(jsonData)",
+									"let UID_lintingCollection = jsonData.collection.uid",
+									"console.log(UID_lintingCollection)",
+									"pm.collectionVariables.set('UID_lintingCollection', UID_lintingCollection);",
+									"",
+									"",
+									"pm.test(\"response is ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"response json data should not have errors\", function () {",
+									"    pm.response.to.have.jsonBody();",
+									"    pm.response.to.not.have.jsonBody('error');",
+									"});",
+									"",
+									"pm.test(\"response json should contain one collection\", function () {",
+									"    pm.expect(pm.response.json()).to.have.property('collection').and.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"response json should return collection details\", function () {",
+									"    pm.expect(pm.response.json()).to.have.property('collection')",
+									"        .and.to.include.keys(['id', 'name', 'uid']);",
+									"});",
+									"",
+									"// additional tests to ensure that the relevant environment variables are present",
+									"// pm.test('\"postman_api_key\" variable should be present', function () {",
+									"//     pm.expect(pm.variables.get('postman_api_key')).to.be.a('string');",
+									"// });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let randomInt = pm.environment.get(\"randomInt\")",
+									"",
+									"//let lintingSchema = pm.collectionVariables.get('lintingSchema')",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"collection\": \n{\n\t\"info\": {\n\t\t\"name\": \"{{schemaTitle}} - {{randomInt}} - Linting\",\n\t\t\"description\": \"This collection lints an OpenAPI using a public API, passing an OpenAPI and a URL for a set of rules to be used when linting, returning the assertions using the test results for the response. The API doesn't require authentication and works to make linting on OAS documents as easy as possible. You can explore [more rules](http://rules.linting.org/) via the rules catalog we are creating to help improve the rulesets available and [submit a Github issue](https://github.com/postman-open-technologies/linting-rules/issues) if there is a rule you'd like to see or need help with.\",\n\t\t\"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\"\n\t},\n\t\"item\": [\n\t\t{\n\t\t\t\"name\": \"Lint OpenAPI\",\n\t\t\t\"event\": [\t\n\t\t\t\t{\n\t\t\t\t\t\"listen\": \"test\",\n\t\t\t\t\t\"script\": {\n\t\t\t\t\t\t\"exec\": [\n\t\t\t\t\t\t\t\"pm.test(\\\"Status code is 200\\\", function () {\",\n\t\t\t\t\t\t\t\"  pm.response.to.have.status(200);\",\n\t\t\t\t\t\t\t\"});\",\n\t\t\t\t\t\t\t\"\",\n\t\t\t\t\t\t\t\"if (pm.response.code !== 200) {\",\n\t\t\t\t\t\t\t\"  return;\",\n\t\t\t\t\t\t\t\"}\",\n\t\t\t\t\t\t\t\"\",\n\t\t\t\t\t\t\t\"const response = pm.response.json();\",\n\t\t\t\t\t\t\t\"\",\n\t\t\t\t\t\t\t\"const failureSeverity = ['error', 'warning', 'information', 'hint'];\",\n\t\t\t\t\t\t\t\"const v = [];\",\n\t\t\t\t\t\t\t\"\",\n\t\t\t\t\t\t\t\"for (result of response) {\",\n\t\t\t\t\t\t\t\"  if (result.status === 'failed') {\",\n\t\t\t\t\t\t\t\"    const { code, failure: { message, range, severity } } = result; \",\n\t\t\t\t\t\t\t\"    const sev = failureSeverity[severity]\",\n\t\t\t\t\t\t\t\"    pm.test(message, () => pm.expect.fail(`(${sev}) ${code}[${range.start.line},${range.start.character}]`));       \",\n\t\t\t\t\t\t\t\"    v.push(`<li><strong>${code}</strong> (${sev}) ${message}</li>`);\",\n\t\t\t\t\t\t\t\"  } else if (result.status === 'passed') {\",\n\t\t\t\t\t\t\t\"    const { code, message } = result; \",\n\t\t\t\t\t\t\t\"    pm.test(`${message} (${code})`, () => {\",\n\t\t\t\t\t\t\t\"      pm.expect(true).to.be.true;\",\n\t\t\t\t\t\t\t\"    });\",\n\t\t\t\t\t\t\t\"    v.push(`<li><strong>${code}</strong> (success) ${message}</li>`);\",\n\t\t\t\t\t\t\t\"  }\",\n\t\t\t\t\t\t\t\"}\",\n\t\t\t\t\t\t\t\"\",\n\t\t\t\t\t\t\t\"pm.visualizer.set(`<ul>${v.join('')}</ul>`);\"\n\t\t\t\t\t\t],\n\t\t\t\t\t\t\"type\": \"text/javascript\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"request\": {\n\t\t\t\t\"method\": \"POST\",\n\t\t\t\t\"header\": [],\n\t\t\t\t\"body\": {\n\t\t\t\t\t\"mode\": \"raw\",\n\t\t\t\t\t\"raw\": {{lintingSchema}},\n\t\t\t\t\t\"options\": {\n\t\t\t\t\t\t\"raw\": {\n\t\t\t\t\t\t\t\"language\": \"json\"\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"url\": {\n\t\t\t\t\t\"raw\": \"https://api.linting.org/linter?rulesUrl=https://rules.linting.org/rulesets/info/\",\n\t\t\t\t\t\"host\": [\n\t\t\t\t\t\t\"https://api.linting.org\"\n\t\t\t\t\t],\n\t\t\t\t\t\"path\": [\n\t\t\t\t\t\t\"linter\"\n\t\t\t\t\t],\n\t\t\t\t\t\"query\": [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"rulesUrl\",\n\t\t\t\t\t\t\t\"value\": \"https://rules.linting.org/rulesets/info/\",\n\t\t\t\t\t\t\t\"description\": \"A dynamic ruleset built from multiple description rules. You can pass in any rules or ruleset of your own.\"\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"response\": [\n\t\t\t\t{\n\t\t\t\t\t\"name\": \"Lint OpenAPI\",\n\t\t\t\t\t\"originalRequest\": {\n\t\t\t\t\t\t\"method\": \"POST\",\n\t\t\t\t\t\t\"header\": [],\n\t\t\t\t\t\t\"body\": {\n\t\t\t\t\t\t\t\"mode\": \"raw\",\n\t\t\t\t\t\t\t\"raw\": \"openapi: 3.0.0\\ninfo:\\n  version: v0.1.0\\n  title: Restaurants\\n  description: This is the API for managing detail of the restaurants.\\nservers:\\n- url: http://api.example.com/\\npaths:\\n  \\\"/restaurants\\\":\\n    get:\\n      summary: Restaurants\\n      operationId: getRestaurants\\n      parameters:\\n      - name: token\\n        in: header\\n        required: true\\n        schema:\\n          type: array\\n          items:\\n            type: integer\\n            format: int64\\n        style: simple\\n      tags:\\n      - Restaurant\\n      responses:\\n        '200':\\n          description: Restaurant\\n          content:\\n            application/json:\\n              schema:\\n                \\\"$ref\\\": \\\"#/components/schemas/RestaurantListing\\\"\\n    post:\\n      summary: Restaurant\\n      operationId: addRestaurant\\n      tags:\\n      - Restaurant\\n      requestBody:\\n        description: Restaurant\\n        content:\\n          application/json:\\n            schema:\\n              \\\"$ref\\\": \\\"#/components/schemas/Restaurant\\\"\\n      responses:\\n        '201':\\n          description: Restaurant\\n          content:\\n            application/json:\\n              schema:\\n                \\\"$ref\\\": \\\"#/components/schemas/Restaurant\\\"\\n  \\\"/restaurants/{restaurantId}\\\":\\n    get:\\n      summary: Restaurant\\n      operationId: getRestaurant\\n      parameters:\\n      - name: restaurantId\\n        in: path\\n        description: The unique id.\\n        required: true\\n        schema:\\n          type: string\\n      - name: newProperty\\n        in: query\\n        description: The unique id.\\n        required: true\\n        schema:\\n          type: string\\n      tags:\\n      - Restaurant\\n      responses:\\n        '200':\\n          description: Restaurant\\n          content:\\n            application/json:\\n              schema:\\n                \\\"$ref\\\": \\\"#/components/schemas/Restaurant\\\"\\n    put:\\n      summary: Restaurant\\n      operationId: updateRestaurant\\n      parameters:\\n      - name: restaurantId\\n        in: path\\n        description: The unique id.\\n        required: true\\n        schema:\\n          type: string\\n      tags:\\n      - Restaurant\\n      requestBody:\\n        description: Restaurant\\n        content:\\n          application/json:\\n            schema:\\n              \\\"$ref\\\": \\\"#/components/schemas/Restaurant\\\"\\n      responses:\\n        '204':\\n          description: Restaurant\\n    delete:\\n      summary: Restaurant\\n      operationId: deleteRestaurant\\n      parameters:\\n      - name: restaurantId\\n        in: path\\n        description: The unique id.\\n        required: true\\n        schema:\\n          type: string\\n      tags:\\n      - Restaurant\\n      responses:\\n        '204':\\n          description: Restaurant\\ncomponents:\\n  schemas:\\n    RestaurantListing:\\n      type: array\\n      items:\\n        \\\"$ref\\\": \\\"#/components/schemas/Restaurant\\\"\\n    Restaurant:\\n      type: object\\n      properties:\\n        id:\\n          type: integer\\n          format: int64\\n        servesCuisine:\\n          description: The cuisine of the restaurant.\\n          type: string\\n        starRating:\\n          description: An official rating for a lodging business or food establishment,\\n            e.g. from national associations or standards bodies. Use the author property\\n            to indicate the rating organization, e.g. as an Organization with name\\n            such as (e.g. HOTREC, DEHOGA, WHR, or Hotelstars).\\n          type: object\\n          format: starRating\\n        menu:\\n          description: Either the actual menu as a structured representation, as text,\\n            or a URL of the menu.\\n          type: string\\n        acceptsReservations:\\n          description: Indicates whether a FoodEstablishment accepts reservations.\\n            Values can be Boolean, an URL at which reservations can be made or (for\\n            backwards compatibility) the strings ```Yes``` or ```No```.\\n          type: string\\n        hasMenu:\\n          description: Either the actual menu as a structured representation, as text,\\n            or a URL of the menu.\\n          type: string\\n\",\n\t\t\t\t\t\t\t\"options\": {\n\t\t\t\t\t\t\t\t\"raw\": {\n\t\t\t\t\t\t\t\t\t\"language\": \"json\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"url\": {\n\t\t\t\t\t\t\t\"raw\": \"https://api.linting.org/linter?rulesUrl=https://rules.linting.org/rulesets/info/\",\n\t\t\t\t\t\t\t\"host\": [\n\t\t\t\t\t\t\t\t\"https://api.linting.org\"\n\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\"path\": [\n\t\t\t\t\t\t\t\t\"linter\"\n\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\"query\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"key\": \"rulesUrl\",\n\t\t\t\t\t\t\t\t\t\"value\": \"https://rules.linting.org/rulesets/info/\",\n\t\t\t\t\t\t\t\t\t\"description\": \"A dynamic ruleset built from multiple description rules. You can pass in any rules or ruleset of your own.\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\"status\": \"OK\",\n\t\t\t\t\t\"code\": 200,\n\t\t\t\t\t\"_postman_previewlanguage\": \"json\",\n\t\t\t\t\t\"header\": [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Date\",\n\t\t\t\t\t\t\t\"value\": \"Wed, 02 Mar 2022 00:54:48 GMT\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Content-Type\",\n\t\t\t\t\t\t\t\"value\": \"application/json; charset=utf-8\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Transfer-Encoding\",\n\t\t\t\t\t\t\t\"value\": \"chunked\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Connection\",\n\t\t\t\t\t\t\t\"value\": \"keep-alive\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"x-amzn-requestid\",\n\t\t\t\t\t\t\t\"value\": \"ffad9d49-477f-4e8b-a4b6-32ea9c39aaaf\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"access-control-allow-origin\",\n\t\t\t\t\t\t\t\"value\": \"*\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"x-amz-apigw-id\",\n\t\t\t\t\t\t\t\"value\": \"OVL8vFlUPHcF7CQ=\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"x-amzn-trace-id\",\n\t\t\t\t\t\t\t\"value\": \"Root=1-621ec051-42a3a9f429814f9408c4823c\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"CF-Cache-Status\",\n\t\t\t\t\t\t\t\"value\": \"DYNAMIC\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Expect-CT\",\n\t\t\t\t\t\t\t\"value\": \"max-age=604800, report-uri=\\\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\\\"\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Report-To\",\n\t\t\t\t\t\t\t\"value\": \"{\\\"endpoints\\\":[{\\\"url\\\":\\\"https:\\\\/\\\\/a.nel.cloudflare.com\\\\/report\\\\/v3?s=mogGYA5DHT2mEI7iTx6i%2Bb8mVzA6O%2FB30RpxsrWL5IgSw7OMg%2BCMCDXz600HPoJCIp1rRDqpqNgC9tKXHYjX%2B5Zn%2FMunBku4IDYUD3k2VlsAuQb7i6U8RmSTd9GCn3xo%2BD0%3D\\\"}],\\\"group\\\":\\\"cf-nel\\\",\\\"max_age\\\":604800}\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"NEL\",\n\t\t\t\t\t\t\t\"value\": \"{\\\"success_fraction\\\":0,\\\"report_to\\\":\\\"cf-nel\\\",\\\"max_age\\\":604800}\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Server\",\n\t\t\t\t\t\t\t\"value\": \"cloudflare\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"CF-RAY\",\n\t\t\t\t\t\t\t\"value\": \"6e56299b6fec7da6-LAX\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"Content-Encoding\",\n\t\t\t\t\t\t\t\"value\": \"br\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"key\": \"alt-svc\",\n\t\t\t\t\t\t\t\"value\": \"h3=\\\":443\\\"; ma=86400, h3-29=\\\":443\\\"; ma=86400\"\n\t\t\t\t\t\t}\n\t\t\t\t\t],\n\t\t\t\t\t\"cookie\": [],\n\t\t\t\t\t\"body\": \"[\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-title\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object title.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-title-max-length\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs information titles are not longer than 50 characters.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-title-word-check\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs info object title do not contain certain words.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-title-in-kebab-case\\\",\\n        \\\"status\\\": \\\"failed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs information title are in Kebab case.\\\",\\n        \\\"failure\\\": {\\n            \\\"message\\\": \\\"The info object title needs to be in Kebab case.\\\",\\n            \\\"path\\\": [\\n                \\\"info\\\",\\n                \\\"title\\\"\\n            ],\\n            \\\"severity\\\": 0,\\n            \\\"source\\\": \\\"<REQUEST_BODY_0>\\\",\\n            \\\"range\\\": {\\n                \\\"start\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 54\\n                },\\n                \\\"end\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 67\\n                }\\n            }\\n        }\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-summary\\\",\\n        \\\"status\\\": \\\"failed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object summary.\\\",\\n        \\\"failure\\\": {\\n            \\\"message\\\": \\\"The info object should have a summary.\\\",\\n            \\\"path\\\": [\\n                \\\"info\\\"\\n            ],\\n            \\\"severity\\\": 0,\\n            \\\"source\\\": \\\"<REQUEST_BODY_0>\\\",\\n            \\\"range\\\": {\\n                \\\"start\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 26\\n                },\\n                \\\"end\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 139\\n                }\\n            }\\n        }\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-summary-max-length\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs information object summary are not too long.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-summary-word-check\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs information object summary do not contain some words.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-description\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information description.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-description-max-length\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all APIs descriptions are under a specific length.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-description-word-check\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all APIs descriptions do not contain certain words.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-contact\\\",\\n        \\\"status\\\": \\\"failed\\\",\\n        \\\"message\\\": \\\"Ensures that all APIs have contact information.\\\",\\n        \\\"failure\\\": {\\n            \\\"message\\\": \\\"API must have a contact information available.\\\",\\n            \\\"path\\\": [\\n                \\\"info\\\"\\n            ],\\n            \\\"severity\\\": 0,\\n            \\\"source\\\": \\\"<REQUEST_BODY_0>\\\",\\n            \\\"range\\\": {\\n                \\\"start\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 26\\n                },\\n                \\\"end\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 139\\n                }\\n            }\\n        }\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-contact-name\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all APIs have contact name.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-contact-email\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all APIs have contact email.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-contact-url\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all APIs have contact URL.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-license\\\",\\n        \\\"status\\\": \\\"failed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object license.\\\",\\n        \\\"failure\\\": {\\n            \\\"message\\\": \\\"The info object should have a license.\\\",\\n            \\\"path\\\": [\\n                \\\"info\\\"\\n            ],\\n            \\\"severity\\\": 0,\\n            \\\"source\\\": \\\"<REQUEST_BODY_0>\\\",\\n            \\\"range\\\": {\\n                \\\"start\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 26\\n                },\\n                \\\"end\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 139\\n                }\\n            }\\n        }\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-license-name\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object license name.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-license-url\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object license url.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-license-url-apache\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object license url for Apache.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-license-url-mit\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object license url for MIT.\\\"\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-terms-of-service\\\",\\n        \\\"status\\\": \\\"failed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object terms of service.\\\",\\n        \\\"failure\\\": {\\n            \\\"message\\\": \\\"The info object should have a terms of service.\\\",\\n            \\\"path\\\": [\\n                \\\"info\\\"\\n            ],\\n            \\\"severity\\\": 0,\\n            \\\"source\\\": \\\"<REQUEST_BODY_0>\\\",\\n            \\\"range\\\": {\\n                \\\"start\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 26\\n                },\\n                \\\"end\\\": {\\n                    \\\"line\\\": 0,\\n                    \\\"character\\\": 139\\n                }\\n            }\\n        }\\n    },\\n    {\\n        \\\"code\\\": \\\"openapi-v3-info-version\\\",\\n        \\\"status\\\": \\\"passed\\\",\\n        \\\"message\\\": \\\"Ensures that all OpenAPIs have a information object version.\\\"\\n    }\\n]\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t],\n\t\"event\": [\n\t\t{\n\t\t\t\"listen\": \"prerequest\",\n\t\t\t\"script\": {\n\t\t\t\t\"type\": \"text/javascript\",\n\t\t\t\t\"exec\": [\n\t\t\t\t\t\"\"\n\t\t\t\t]\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"listen\": \"test\",\n\t\t\t\"script\": {\n\t\t\t\t\"type\": \"text/javascript\",\n\t\t\t\t\"exec\": [\n\t\t\t\t\t\"\"\n\t\t\t\t]\n\t\t\t}\n\t\t}\n\t],\n\t\"variable\": [\n\t\t{\n\t\t\t\"key\": \"baseUrl\",\n\t\t\t\"value\": \"https://api.linting.org\"\n\t\t}\n\t]\n}\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/collections?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to create collections using the Postman Collection v2 format. For more information about the v2 schema, check the format [here](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html).\n\nOn successful creation of the collection, the response returns the collection `name`, `id` and the `uid`.\n\nYou can also specify the context of a workspace to create a collection in directly by passing the `workspace` as a query param.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Linting Monitor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the environmentID in the env variable",
+									"pm.collectionVariables.set('UID_lintingMonitor', jsonData.monitor.uid)",
+									"",
+									"console.log(\"lintingMonitor_UID \" + jsonData.monitor.uid)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let randomInt = pm.environment.get(\"randomInt\")",
+									"",
+									"lintingCollectionID = pm.collectionVariables.get('lintingCollectionID')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monitor\": {\n    \"name\": \"{{schemaTitle}} - {{randomInt}} Linting Monitor\",\n    \"schedule\": {\n      \"cron\": \"*/5 * * * *\",\n      \"timezone\": \"America/Cancun\"\n    },\n    \"collection\": \"{{UID_lintingCollection}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/monitors?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"monitors"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to create a monitor.\n\nSome sample `cron` values are:\n\n| Frequency                  | Cron Pattern   |\n|-----------------------|----------------|\n| Every 5 minutes       | `*/5 * * * *`  |\n| Every 30 minutes     | `*/30 * * * *` |\n| Every Hour         | `0 */1 * * *`  |\n| Every 6 Hours      | `0 */6 * * *`  |\n| Every day at 5pm    | `0 17 * * *`   |\n| Every Monday at 12pm  | `0 12 * * MON` |\n| Every weekday (Monday - Friday) at 6am | `0 6 * * MON-FRI` |\n\nNote: Currently, you can only create monitors at some limited schedules. You can head to [Postman Monitors](https://monitor.getpostman.com) to see the allowed schedules. \n\nFor more information about the format of the `timezone` value, check this [list of time zones.](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n\nYou can also specify the context of a workspace to create a monitor in directly by passing the `workspace` as a query param.\n\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Linting Relations",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let UID_lintingMonitor = pm.collectionVariables.get('UID_lintingMonitor')",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(\"THE END\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Api-Key",
+								"value": "{{X-Api-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"monitor\": [\"{{UID_lintingMonitor}}\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/relations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"relations"
+							]
+						},
+						"description": "This call allows you to add existing Postman entities as new relations to an API. The request body should contain the relations to be created along with an array of entity IDs. \n\n<table>\n  <tr>\n    <th>Relation</th>\n    <th>Entity ID type</th>\n  <tr>\n  <tr>\n    <td>contracttest</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>integrationtest</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>documentation</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>testsuite</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>environment</td>\n    <td>Environment UIDs</td>\n  </tr>\n  <tr>\n    <td>mock</td>\n    <td>Mock IDs</td>\n  </tr>\n  <tr>\n    <td>monitor</td>\n    <td>Monitor IDs</td>\n  </tr>\n</table>\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				}
+			],
+			"description": "#### What are we doing here?\n\n**Enforce Standards**: Apply linting rules to enforce standards and governance to comply with API guidelines.\n\nCreating automated tests and observability into the API specifications. Making sure those governance rules that US Bank cares about are meet.\n\n![](https://i.imgur.com/iL2ZFRh.png)"
+		},
+		{
+			"name": "Clear Variables",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"UID_lintingCollection\",\"\");",
+							"pm.collectionVariables.set(\"UID_apiVersion\",\"\");",
+							"pm.collectionVariables.set(\"UID_API\",\"\");",
+							"pm.collectionVariables.set(\"UID_schema\",\"\");",
+							"pm.collectionVariables.set(\"UID_lintingMonitor\",\"\");",
+							"pm.collectionVariables.set(\"lintingSchema\",\"\");",
+							"pm.collectionVariables.set(\"string_schema\",\"\");",
+							"pm.collectionVariables.set(\"UID_environment\",\"\");",
+							"pm.collectionVariables.set(\"UID_monitor\",\"\");",
+							"pm.collectionVariables.set(\"UID_mock\",\"\");",
+							"pm.collectionVariables.set(\"URL_mock\",\"\");",
+							"pm.collectionVariables.set(\"UID_collection\",\"\");",
+							"pm.collectionVariables.set(\"randomInt\",\"\");",
+							"pm.collectionVariables.set(\"schemaTitle\",\"\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.postman.com/echo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"postman",
+						"com"
+					],
+					"path": [
+						"echo"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{postmanAPIKey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-api-key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "postmanAPIKey",
+			"value": "<<do not set initital value!>>",
+			"type": "string"
+		},
+		{
+			"key": "GitHubPAT",
+			"value": "<<do not set initital value!>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_TargetWorkspace",
+			"value": "<<Workspace ID in which to create assets>>",
+			"type": "string"
+		},
+		{
+			"key": "GitHubBaseURL",
+			"value": "https://api.github.com",
+			"type": "string"
+		},
+		{
+			"key": "GitHubRepoSlug",
+			"value": "bryancross/Postman-stuff",
+			"type": "string"
+		},
+		{
+			"key": "GitHubRepoPath",
+			"value": "postman/schemas",
+			"type": "string"
+		},
+		{
+			"key": "GitHubSchemaFilename",
+			"value": "catfacts.json",
+			"type": "string"
+		},
+		{
+			"key": "randomInt",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "schemaTitle",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "string_schema",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "lintingSchema",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_API",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_apiVersion",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_schema",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "URL_mock",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_lintingMonitor",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_lintingCollection",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_environment",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_monitor",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_mock",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_collection",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "schemaJSON",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": ""
+		}
+	]
+}

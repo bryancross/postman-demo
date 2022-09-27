@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "2511d1c4-a018-467c-89da-cee41e86f235",
+		"name": "URL Parameter Branching",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21868609"
+	},
+	"item": [
+		{
+			"name": "Parameter Branching",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"postman.setNextRequest(null);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/foobar?Param2=222222&Param3=333333",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"foobar"
+					],
+					"query": [
+						{
+							"key": "Param1",
+							"value": "111111",
+							"disabled": true
+						},
+						{
+							"key": "Param2",
+							"value": "222222"
+						},
+						{
+							"key": "Param3",
+							"value": "333333"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Param 1 Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/foobar?Param1=1111111",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"foobar"
+							],
+							"query": [
+								{
+									"key": "Param1",
+									"value": "1111111"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\" : \"This is the body when Param 1 is included\"\n}"
+				},
+				{
+					"name": "Param 2 Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/foobar?Param2=222222",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"foobar"
+							],
+							"query": [
+								{
+									"key": "Param1",
+									"value": "111111",
+									"disabled": true
+								},
+								{
+									"key": "Param3",
+									"value": "333333",
+									"disabled": true
+								},
+								{
+									"key": "Param2",
+									"value": "222222"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\": \"This is the body when Param 2 is included\"\n}"
+				},
+				{
+					"name": "Param 3 Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/foobar?Param3=333333",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"foobar"
+							],
+							"query": [
+								{
+									"key": "Param1",
+									"value": "111111",
+									"disabled": true
+								},
+								{
+									"key": "Param2",
+									"value": "222222",
+									"disabled": true
+								},
+								{
+									"key": "Param3",
+									"value": "333333"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\" : \"This is the body when Param 3 is included\"\n}"
+				},
+				{
+					"name": "Param 1 and 2 Example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/foobar?Param1=111111&Param2=222222",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"foobar"
+							],
+							"query": [
+								{
+									"key": "Param1",
+									"value": "111111"
+								},
+								{
+									"key": "Param2",
+									"value": "222222"
+								},
+								{
+									"key": "Param3",
+									"value": "333333",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\" : \"This is the body when Params 1 & 2 are included\"\n}"
+				},
+				{
+					"name": "400 Invalid Parameters",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/foobar",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"foobar"
+							],
+							"query": [
+								{
+									"key": "Param1",
+									"value": "111111",
+									"disabled": true
+								},
+								{
+									"key": "Param3",
+									"value": "333333",
+									"disabled": true
+								},
+								{
+									"key": "Param2",
+									"value": "222222",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\" : \" This is the fallthrough\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Demo request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": [
+				{
+					"name": "Demo request",
+					"originalRequest": {
+						"method": "GET",
+						"header": []
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		}
+	]
+}
