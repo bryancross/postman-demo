@@ -128,11 +128,16 @@
 		}
 	],
 	"auth": {
-		"type": "bearer",
-		"bearer": [
+		"type": "apikey",
+		"apikey": [
 			{
-				"key": "token",
-				"value": "{{GitHub_PAT}}",
+				"key": "value",
+				"value": "{{postmanAPIKey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-api-key",
 				"type": "string"
 			}
 		]
