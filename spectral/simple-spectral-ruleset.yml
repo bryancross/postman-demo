@@ -1,6 +1,6 @@
 rules:
 
-  BRKC-api-name-doesnt-contain-api:
+  BRKC-api-name-must-not-contain-api:
     description: The API name must not contain the word API
     message: The info.title value "{{value}}" contains the forbidden word API
     severity: error
