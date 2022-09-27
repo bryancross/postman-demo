@@ -1,50 +1,44 @@
-#extends: [[spectral:oas, all]]
-
 rules:
-  #tag-description: false
-  #example-value-or-externalValue: false
-  #operation-summary-formatted: false
-  #oas3-unused-components-schema: false
-  #oas3-valid-oas-content-example: false
 
-  BRKC-ensure-endpoint-summary:
-    description: Endpoints must have a summary.
-    given: $.paths[*][*]
+  BRKC-api-name-doesnt-contain-api:
+    description: The API name must not contain the word API
+    message: The info.title value "{{value}}" contains the forbidden word API
     severity: error
-    recommended: true
-    message: "{{error}}"
+    formats:
+      - oas2
+      - oas3
+    given:
+      - $.info
     then:
-      field: summary
-      function: truthy     
+      - field: title
+        function: pattern
+        functionOptions:
+          notMatch: /\b(api)\b/i
 
-  BRKC-ensure-response-description:
-    description: Responses must have a description.
-    given: $.components.schemas[*]
+  BRKC-ensure-API-description:
+    description: The API itself must have a description
+    given: $.info
     severity: error
-    recommended: true
-    message: "{{error}}"
+    message: API specifications must have a description
     then:
-      field: summary
-      function: truthy       
-
+      field: description
+      function: truthy   
 
   BRKC-ensure-param-description:
     description: Parameters must have a description.
-    given: $..*.parameters[*]
+    given: $.paths.*.*.parameters
     severity: error
-    recommended: true
-    message: "{{error}}"
+    message: All parameters must have a description
     then:
-      field: summary
+      field: description
       function: truthy       
 
-  BRKC-ensure-properties-description:
-    description: Properties must have a description.
-    given: $..*.properties[*]
+
+  BRKC-ensure-endpoint-summary:
+    description: Endpoints must have a summary.
+    given: $.paths.*.*
     severity: error
-    recommended: true
-    resolved: true
-    message: "{{error}}"
+    message: All endpoints must have a summary
     then:
       field: summary
-      function: truthy          
+      function: truthy              
