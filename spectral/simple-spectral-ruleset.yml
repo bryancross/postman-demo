@@ -7,7 +7,7 @@ rules:
   #oas3-unused-components-schema: false
   #oas3-valid-oas-content-example: false
 
-  ensure-endpoint-summary:
+  BRKC-ensure-endpoint-summary:
     description: Endpoints must have a summary.
     given: $.paths[*][*]
     severity: error
@@ -17,7 +17,7 @@ rules:
       field: summary
       function: truthy     
 
-  ensure-response-description:
+  BRKC-ensure-response-description:
     description: Responses must have a description.
     given: $.components.schemas[*]
     severity: error
@@ -28,7 +28,7 @@ rules:
       function: truthy       
 
 
-  ensure-param-description:
+  BRKC-ensure-param-description:
     description: Parameters must have a description.
     given: $..*.parameters[*]
     severity: error
@@ -38,7 +38,7 @@ rules:
       field: summary
       function: truthy       
 
-  ensure-properties-description:
+  BRKC-ensure-properties-description:
     description: Properties must have a description.
     given: $..*.properties[*]
     severity: error
@@ -47,15 +47,4 @@ rules:
     message: "{{error}}"
     then:
       field: summary
-      function: truthy        
-
-  ensure-operation-id-format:
-    description: An operation ID must follow our required format
-    given: $.paths[*][*]
-    severity: error
-    recommended: true
-    resolved: true
-    message: "{{error}}"
-    then:
-      field: summary
-      function: truthy     
+      function: truthy          
