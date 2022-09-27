@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Dirty Cat Fact API (JSON)",
-    "description": "An API for facts about cats",
+    
     "contact": {
       "email": "contact@catfact.ninja"
     },
@@ -20,7 +20,7 @@
           {
             "name": "limit",
             "in": "query",
-            "description": "limit the amount of results returned",
+            "description":"This is a description",
             "required": false,
             "schema": {
               "type": "integer",
@@ -30,7 +30,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description":"Normal operation",
             "content": {
               "application/json": {
                 "schema": {
@@ -50,7 +50,7 @@
         "tags": [
           "Facts"
         ],
-        "summary": "Get Random Fact",
+        
         "description": "Returns a random fact",
         "operationId": "getRandomFact",
         "parameters": [
@@ -67,6 +67,7 @@
         ],
         "responses": {
           "200": {
+            "description":"NOrmal response",
             "content": {
               "application/json": {
                 "schema": {
@@ -93,7 +94,6 @@
           {
             "name": "max_length",
             "in": "query",
-            "description": "maximum length of returned fact",
             "required": false,
             "schema": {
               "type": "integer",
