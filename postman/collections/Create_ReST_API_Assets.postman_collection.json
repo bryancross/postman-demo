@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "ef22cc18-d8ca-4d7e-a2d1-f238b9f5df62",
+		"_postman_id": "df650cc7-70bb-485a-8bb4-5b55fba68a57",
 		"name": "Create ReST API Assets",
 		"description": "# Create Rest Assets\n\nStandardizing practices & process automation by\n\n*   Automating controls\n*   Enforcing standards\n*   Generating evidence\n    \n\n![](https://i.imgur.com/9E9b8gf.png)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21868609"
+		"_exporter_id": "23481657"
 	},
 	"item": [
 		{
@@ -995,11 +995,6 @@
 			"type": "string"
 		},
 		{
-			"key": "UID_TargetWorkspace",
-			"value": "<<Workspace ID in which to create assets>>",
-			"type": "string"
-		},
-		{
 			"key": "GitHubBaseURL",
 			"value": "https://api.github.com",
 			"type": "string"
@@ -1037,6 +1032,11 @@
 		{
 			"key": "lintingSchema",
 			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_TargetWorkspace",
+			"value": "<<Workspace ID in which to create assets>>",
 			"type": "string"
 		},
 		{
