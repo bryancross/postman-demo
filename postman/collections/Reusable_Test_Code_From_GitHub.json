@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "e672adf1-3dc3-45bc-8c84-0f89d5caed0e",
+		"_postman_id": "829c6357-b8a5-4918-94d6-ace9026c855a",
 		"name": "Reusable Test Code from GitHub",
 		"description": "## Overview\n\nRetrieve and execute Postman tests from a GitHub repo. Requires a [GitHub PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). If your organization uses SAML for Single Sign-On (SSO), you'll need to [authorize your PAT for SSO](https://docs.github.com/en/rest/overview/other-authentication-methods#authenticating-for-saml-sso). The pre-request script uses the [GitHub REST API](https://docs.github.com/en/rest/repos/contents#get-repository-content) to retrieve and decode the content.\n\nNOTE: At the moment only content on the default branch is retrieved.\n\nNOTE: This script assumes that the content residing at `path` is a [text file < 1MB in size](https://docs.github.com/en/rest/repos/contents#size-limits).\n\n## Using the Collection\n\n1.  Update the `GitHub_PAT` collection variable with your GitHub Personal Access Token (PAT). Your PAT will need [repo](https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes) scope.  \n    **CAUTION**: Update the **current value** only to prevent your token leaking!!\n    1.  If you don't have a GitHub PAT, you can easily [create one](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).\n2.  Run the Get collection and folder test snippets from GitHub request in the `Folder test levels` folder.  \n    Two sets of test code are loaded, one by the Collection pre-request script, the other by the folder pre-request script.  \n    The only code needed in the request itself are the 2 eval statements that load those snippets. SIMPLE!\n    \n\n## Collection variables\n\nThe following collection variables are designed to be edited by the end user as required. Other collection variables are for runtime use and are populated by code.\n\n| **Variable** | **Desc** |\n| --- | --- |\n| owner | GitHub owner of the repository containing the test script snippets. |\n| GitHub_repoSlug | GitHub repo \"slug\" of the repository containing the test script snippets.  <br>  <br>A \"slug\" is just the repo owner and repo name concatenated with a '/'  <br>**EXAMPLE:** octocat/my-repo |\n| Path_CollectionTestCode | Path of the file containing the collection level test script snippets within the repo. Path is relative to the root of the repo and does *not* include a leading slash.  <br>  <br>**EXAMPLE**: code-snippets/my-code-snippet.js |\n| Path_FolderTestCode | Path of the file containing the collection level test script snippets within the repo.  <br>  <br>**EXAMPLE**: code-snippets/my-code-snippet.js |\n| GitHub_PAT | Your [GitHub PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with at least [repo](https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes) scope.  <br>  <br>**CAUTION**: Update the current value only to prevent your token leaking!!  <br>  <br>**NOTE**: Could and probably should be managed at the environment level for use by teams/Enterprises.  <br> |\n| baseUrl | GitHub API base URL, currently `https://api.github.com` |",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21868609"
+		"_exporter_id": "23481657"
 	},
 	"item": [
 		{
@@ -166,7 +166,12 @@
 	],
 	"variable": [
 		{
-			"key": "baseUrl",
+			"key": "postmanAPIKey",
+			"value": "<<Do not set initial value>>",
+			"type": "string"
+		},
+		{
+			"key": "GitHub_baseURL\n",
 			"value": "https://api.github.com",
 			"type": "string"
 		},
@@ -176,17 +181,27 @@
 			"type": "string"
 		},
 		{
-			"key": "SrcCode_CollectionTests",
-			"value": "<<Set at runtime>>"
-		},
-		{
 			"key": "GitHub_repoSlug",
 			"value": "bryancross/Postman-stuff",
 			"type": "string"
 		},
 		{
-			"key": "Path_CollectionTestCode",
+			"key": "GitHub_\nPath_CollectionTestCode",
 			"value": "test-snippets/collection-level-tests.js",
+			"type": "string"
+		},
+		{
+			"key": "GitHub_\nPath_FolderTestCode",
+			"value": "test-snippets/folder-level-tests.js",
+			"type": "string"
+		},
+		{
+			"key": "SrcCode_CollectionTests",
+			"value": "<<Set at runtime>>"
+		},
+		{
+			"key": "SrcCode_FolderTests",
+			"value": "<<Set at Runtime>>",
 			"type": "string"
 		},
 		{
@@ -197,21 +212,6 @@
 		{
 			"key": "SrcCode_getFolderTests",
 			"value": "/*\n * Example showing the code to retrieve snippets from GitHub\n * at the collection level.  Stored in the SrcCode_getCollectionTests\n * environment variable\n*/\n//Setup the URL components\nvar owner = pm.collectionVariables.get(\"owner\");\nvar GitHub_repoSlug = pm.collectionVariables.get(\"GitHub_repoSlug\");\nvar path = pm.collectionVariables.get(\"Path_FolderTestCode\");\nvar token = pm.collectionVariables.get(\"GitHub_PAT\");\nvar baseUrl = pm.collectionVariables.get(\"baseUrl\");\n//Build the URL\nvar url = baseUrl + \"/repos/\" + GitHub_repoSlug + \"/contents/\" + path;\nconsole.log(\"URL: \" + url);\nconst postRequest = {\n  url: url,\n  method: 'get',\n  header: {\n    'Content-Type': 'application/json',\n    'Authorization': 'bearer ' + token\n  }\n};\npm.sendRequest(postRequest, (err, res) => {\n    var jsonData = JSON.parse(res.text());\nvar base64content = jsonData.content;\nvar buff = new Buffer(base64content, 'base64');\nvar content = buff.toString('ascii');\npm.collectionVariables.set(\"SrcCode_FolderTests\", content);\n});",
-			"type": "string"
-		},
-		{
-			"key": "Path_FolderTestCode",
-			"value": "test-snippets/folder-level-tests.js",
-			"type": "string"
-		},
-		{
-			"key": "SrcCode_FolderTests",
-			"value": "<<Set at Runtime>>",
-			"type": "string"
-		},
-		{
-			"key": "postmanAPIKey",
-			"value": "<<Do not set initial value>>",
 			"type": "string"
 		}
 	]
