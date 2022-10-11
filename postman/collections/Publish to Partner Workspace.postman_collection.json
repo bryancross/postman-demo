@@ -1,26 +1,101 @@
 {
 	"info": {
-		"_postman_id": "5f84ae06-b73c-466d-8cae-c75cfab24aa3",
+		"_postman_id": "41cb99df-59da-4568-9a31-68bbdd1a379b",
 		"name": "Publish to Partner Workspace",
-		"description": "## Overview\n\nRetrieve and execute Postman tests from a GitHub repo. Requires a [GitHub PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). If your organization uses SAML for Single Sign-On (SSO), you'll need to [authorize your PAT for SSO](https://docs.github.com/en/rest/overview/other-authentication-methods#authenticating-for-saml-sso). The pre-request script uses the [GitHub REST API](https://docs.github.com/en/rest/repos/contents#get-repository-content) to retrieve and decode the content.\n\nNOTE: At the moment only content on the default branch is retrieved.\n\nNOTE: This script assumes that the content residing at `path` is a [text file < 1MB in size](https://docs.github.com/en/rest/repos/contents#size-limits).\n\n## Using the Collection\n\n1.  Update the `GitHub_PAT` collection variable with your GitHub Personal Access Token (PAT). Your PAT will need [repo](https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes) scope.  \n    **CAUTION**: Update the **current value** only to prevent your token leaking!!\n    1.  If you don't have a GitHub PAT, you can easily [create one](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).\n2.  Run the Get collection and folder test snippets from GitHub request in the `Folder test levels` folder.  \n    Two sets of test code are loaded, one by the Collection pre-request script, the other by the folder pre-request script.  \n    The only code needed in the request itself are the 2 eval statements that load those snippets. SIMPLE!\n    \n\n## Collection variables\n\nThe following collection variables are designed to be edited by the end user as required. Other collection variables are for runtime use and are populated by code.\n\n| **Variable** | **Desc** |\n| --- | --- |\n| owner | GitHub owner of the repository containing the test script snippets. |\n| GitHub_repoSlug | GitHub repo \"slug\" of the repository containing the test script snippets.  <br>  <br>A \"slug\" is just the repo owner and repo name concatenated with a '/'  <br>**EXAMPLE:** octocat/my-repo |\n| Path_CollectionTestCode | Path of the file containing the collection level test script snippets within the repo. Path is relative to the root of the repo and does *not* include a leading slash.  <br>  <br>**EXAMPLE**: code-snippets/my-code-snippet.js |\n| Path_FolderTestCode | Path of the file containing the collection level test script snippets within the repo.  <br>  <br>**EXAMPLE**: code-snippets/my-code-snippet.js |\n| GitHub_PAT | Your [GitHub PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with at least [repo](https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes) scope.  <br>  <br>**CAUTION**: Update the current value only to prevent your token leaking!!  <br>  <br>**NOTE**: Could and probably should be managed at the environment level for use by teams/Enterprises.  <br> |\n| baseUrl | GitHub API base URL, currently `https://api.github.com` |",
+		"description": "# Create Rest Assets\n\nStandardizing practices & process automation by\n\n*   Automating controls\n*   Enforcing standards\n*   Generating evidence\n    \n\n![](https://i.imgur.com/9E9b8gf.png)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "23357111"
 	},
 	"item": [
 		{
-			"name": "Folder level tests",
+			"name": "Publish",
 			"item": [
 				{
-					"name": "Collection, Folder, and Request level scripts",
+					"name": "Fetch Schema from GItHub",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(pm.response.text());",
+									"var base64content = jsonData.content;",
+									"var buff = new Buffer(base64content, 'base64');",
+									"var content = buff.toString('ascii');",
+									"let schemaJSON = JSON.stringify(JSON.parse(buff.toString('ascii'))); ",
+									"pm.collectionVariables.set(\"string_schema\",  (JSON.stringify(schemaJSON)).substr(1).slice(0, -1));",
+									"pm.collectionVariables.set(\"schemaTitle\",JSON.parse(content).info.title);",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.collectionVariables.set(\"UID_apiVersion\",\"\");",
+									"pm.collectionVariables.set(\"UID_API\",\"\");",
+									"",
+									"pm.collectionVariables.set(\"UID_schema\",\"\");",
+									"pm.collectionVariables.set(\"string_schema\",\"\");",
+									"",
+									"",
+									"",
+									"",
+									"pm.collectionVariables.set(\"UID_environment\",\"\");",
+									"pm.collectionVariables.set(\"UID_monitor\",\"\");",
+									"pm.collectionVariables.set(\"UID_mock\",\"\");",
+									"pm.collectionVariables.set(\"URL_mock\",\"\");",
+									"pm.collectionVariables.set(\"UID_collection\",\"\");",
+									"pm.collectionVariables.set(\"randomInt\",\"\");",
+									"pm.collectionVariables.set(\"schemaTitle\",\"\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{GitHubPAT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{GitHubBaseURL}}/repos/{{GitHubRepoSlug}}/contents/{{GitHubRepoPath}}/{{GitHubSchemaFilename}}",
+							"host": [
+								"{{GitHubBaseURL}}"
+							],
+							"path": [
+								"repos",
+								"{{GitHubRepoSlug}}",
+								"contents",
+								"{{GitHubRepoPath}}",
+								"{{GitHubSchemaFilename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"eval(pm.collectionVariables.get(\"SrcCode_getFolderTests\"));",
 									"",
-									"//uncomment this line to load the Folder level tests",
-									"//eval(pm.collectionVariables.get(\"SrcCode_getFolderTests\"));"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -29,11 +104,73 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//Additional Request level tests go here",
+									"const jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"UID_API\", jsonData.api.id);",
 									"",
-									"pm.test(\"REQUEST Status code is 200\", function () {",
+									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
-									"});"
+									"});",
+									"",
+									"pm.test(\"Should have valid response\", function () {",
+									"    pm.expect(jsonData.api).to.include.all.keys('id', 'name', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy');",
+									"    ",
+									"    // pm.expect(jsonData.api.name).to.be.equal('New API');",
+									"    pm.expect(jsonData.api.id).to.be.ok;",
+									"    pm.expect(jsonData.api.createdAt).to.be.ok;",
+									"    pm.expect(jsonData.api.createdBy).to.be.ok;",
+									"    pm.expect(jsonData.api.updatedAt).to.be.ok;",
+									"    pm.expect(jsonData.api.updatedBy).to.be.ok;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"api\": {\n        \"name\": \"{{schemaTitle}}\",\n        \"summary\": \"{{$randomJobTitle}}\",\n        \"description\": \"{{$randomJobDescriptor}}\"\n    }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All API Versions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"// Set the DRAFT versionId as an env variable",
+									"pm.collectionVariables.set('UID_apiVersion', jsonData.versions[0].id)",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -43,33 +180,389 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://postman-echo.com/get",
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions",
 							"protocol": "https",
 							"host": [
-								"postman-echo",
+								"api",
+								"getpostman",
 								"com"
 							],
 							"path": [
-								"get"
+								"apis",
+								"{{UID_API}}",
+								"versions"
 							]
 						},
-						"description": "Runs reusable tests defined at the collection and folder level. Folder level tests are practical at the moment until it becomes possible to [identify the current folder](https://github.com/postmanlabs/postman-app-support/issues/6926) at runtime."
+						"description": "This call fetches details about the all the API Versions in the specified API.\n\nThe response will contain an array `versions` object which would be a list of all the API Version along with their details.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Schema",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the UID_schema in the env variable",
+									"pm.collectionVariables.set('UID_schema', jsonData.schema.id)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"name": "Content-Type",
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"schema\": {\n\t\t\"language\": \"json\",\n\t\t\"schema\":\"{{string_schema}}\",\n\t\t\"type\": \"openapi3\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"schemas"
+							]
+						},
+						"description": "Creates a schema. The request body must contain a `schema` object with the following properties:\n\n*   `type` — A **string** value that contains the schema's type. One of:\n    *   `openapi3_1`\n    *   `openapi3`\n    *   `openapi2`\n    *   `openapi1`\n    *   `raml`\n    *   `raml1`\n    *   `wsdl1`\n    *   `wsdl2`\n    *   `graphql`\n    *   `proto2`\n    *   `graphql`\n    *   `proto3`\n*   `language` — A **string** value that contains the schema's language. One of:\n    *   OpenAPI and RAML — `json` or `yaml`\n    *   GraphQL — `graphql`\n    *   WSDL — `xml`\n    *   Protobuf — `proto`\n*   `schema` — Optional. A **string** value that contains the schema's contents.\n    \n\n> Requires an API Key as the `X-Api-Key` request header or an `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create collection from schema",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the colllectionId in the env variable",
+									"pm.collectionVariables.set('UID_collection', jsonData.collection.uid)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{schemaTitle}}\",\n\t\"relations\": [\n\t\t{\n\t\t\t\"type\": \"documentation\"\n        },\n        {\n            \"type\": \"integrationtest\"\n        },\n        {\n            \"type\": \"testsuite\"\n\t\t}\t\n\t]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas/{{UID_schema}}/collections?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"schemas",
+								"{{UID_schema}}",
+								"collections"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This call creates a collection and links it to an API as one or multiple relations. \n\nRequest body requires two keys:\n- `name` - Name of the collection to be created.\n- `relations` - A list of relation(s) to be created.\n\nThe allowed relation types are `contracttest`, `integrationtest`, `testsuite`, and `documentation`.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Mock",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the URL_mock in the env variable",
+									"pm.collectionVariables.set('URL_mock', jsonData.mock.mockUrl);",
+									"pm.collectionVariables.set('UID_mock', jsonData.mock.id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"mock\": {\n        \"name\": \"{{schemaTitle}}\",\n\t\t\"collection\": \"{{UID_collection}}\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/mocks?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"mocks"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to create a mock on a collection. You can also provide an environment UID to resolve any environment variables in the collection.\n\nYou can also specify the context of a workspace to create a mock in directly by passing the `workspace` as a query param.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Environment",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the environmentID in the env variable",
+									"pm.collectionVariables.set('UID_environment', jsonData.environment.uid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"environment\": {\n        \"name\": \"{{schemaTitle}}\",\n        \"values\": [\n            {\n                \"key\": \"baseUrl\",\n                \"value\": \"{{URL_mock}}\"\n            }\n            ,{\n                \"key\":\"UID_API\"\n                ,\"value\":\"{{UID_API}}\"\n            }\n            ,{\n                \"key\":\"UID_apiVersion\"\n                ,\"value\":\"{{UID_apiVersion}}\"\n            }\n            ,{\n                \"key\":\"UID_schema\"\n                ,\"value\":\"{{UID_schema}}\"\n            }\n            ,{\n                \"key\":\"UID_lintingMonitor\"\n                ,\"value\":\"{{UID_lintingMonitor}}\"\n            }\n            ,{\n                \"key\":\"UID_lintingCollection\"\n                ,\"value\":\"{{UID_lintingCollection}}\"\n            }\n            ,{\n                \"key\":\"UID_environment\"\n                ,\"value\":\"{{UID_environment}}\"\n            }\n            ,{\n                \"key\":\"UID_monitor\"\n                ,\"value\":\"{{UID_monitor}}\"\n            }\n            ,{\n                \"key\":\"UID_mock\"\n                ,\"value\":\"{{UID_mock}}\"\n            }\n            ,{\n                \"key\":\"UID_collection\"\n                ,\"value\":\"{{UID_collection}}\"\n            }\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/environments?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"environments"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "A sample body is added to the request that conforms to the following JSON schema:\n\n```json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"environment\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"name\": {\n              \"type\": \"string\",\n              \"maxLength\": 254,\n              \"minLength\": 1\n            },\n        \"values\": {\n          \"type\": \"array\",\n          \"maxItems\": 100,\n          \"additionalItems\": false,\n          \"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"key\": {\n                  \"type\": \"string\",\n                  \"maxLength\": 254\n                  \"minLength\": 1\n                },\n                \"value\": { \"type\": \"string\" },\n                \"enabled\": { \"type\": \"boolean\" }\n              },\n              \"required\": [\"key\", \"value\"]\n            }\n        }\n      },\n      \"required\": [\"name\"]\n    }\n  },\n  \"required\": [\"environment\"]\n}\n```\n\nOn successful creation of the environment, the API returns the environment name and `id`.\n\nYou can also specify the context of a workspace to create an environment in directly by passing the `workspace` as a query param.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Monitor",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"// Set the environmentID in the env variable",
+									"pm.collectionVariables.set('UID_monitor', jsonData.monitor.uid)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monitor\": {\n    \"name\": \"{{schemaTitle}} monitor\",\n    \"schedule\": {\n      \"cron\": \"*/5 * * * *\",\n      \"timezone\": \"America/Cancun\"\n    },\n    \"collection\": \"{{UID_collection}}\",\n    \"environment\": \"{{UID_environment}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/monitors?workspace={{UID_TargetWorkspace}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"monitors"
+							],
+							"query": [
+								{
+									"key": "workspace",
+									"value": "{{UID_TargetWorkspace}}"
+								}
+							]
+						},
+						"description": "This endpoint allows you to create a monitor.\n\nSome sample `cron` values are:\n\n| Frequency                  | Cron Pattern   |\n|-----------------------|----------------|\n| Every 5 minutes       | `*/5 * * * *`  |\n| Every 30 minutes     | `*/30 * * * *` |\n| Every Hour         | `0 */1 * * *`  |\n| Every 6 Hours      | `0 */6 * * *`  |\n| Every day at 5pm    | `0 17 * * *`   |\n| Every Monday at 12pm  | `0 12 * * MON` |\n| Every weekday (Monday - Friday) at 6am | `0 6 * * MON-FRI` |\n\nNote: Currently, you can only create monitors at some limited schedules. You can head to [Postman Monitors](https://monitor.getpostman.com) to see the allowed schedules. \n\nFor more information about the format of the `timezone` value, check this [list of time zones.](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n\nYou can also specify the context of a workspace to create a monitor in directly by passing the `workspace` as a query param.\n\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Relations",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"mock\" : [\"{{UID_mock}}\"],\n    \"monitor\": [\"{{UID_monitor}}\"],\n    \"environment\" : [\"{{UID_environment}}\"]\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/relations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"relations"
+							]
+						},
+						"description": "This call allows you to add existing Postman entities as new relations to an API. The request body should contain the relations to be created along with an array of entity IDs. \n\n<table>\n  <tr>\n    <th>Relation</th>\n    <th>Entity ID type</th>\n  <tr>\n  <tr>\n    <td>contracttest</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>integrationtest</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>documentation</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>testsuite</td>\n    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>environment</td>\n    <td>Environment UIDs</td>\n  </tr>\n  <tr>\n    <td>mock</td>\n    <td>Mock IDs</td>\n  </tr>\n  <tr>\n    <td>monitor</td>\n    <td>Monitor IDs</td>\n  </tr>\n</table>\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
 					},
 					"response": []
 				}
 			],
-			"description": "Shows the possibilities around defining different reusable test snippets at the Folder level.",
+			"description": "#### What are we doing here?\n\nImproving Developer Experience: **Automating** the process of setting up a Postman environment to allow developers to start building, testing and documenting APIs.\n\n1.  APIs must have documentation\n2.  APIs must have tests\n3.  APIs must have observability\n4.  Mock Servers help developers, QA, front end engineers quickly understand how the API functions.\n    \n\n![](https://i.imgur.com/UGJzFzW.png)",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"type": "text/javascript",
 						"exec": [
-							"//This will be much more useful once it becomes possible to determine the current folder name",
-							"// https://github.com/postmanlabs/postman-app-support/issues/6926",
-							"",
-							"eval(pm.collectionVariables.get(\"SrcCode_getFolderTests\"));",
-							"",
 							""
 						]
 					}
@@ -79,52 +572,185 @@
 					"script": {
 						"type": "text/javascript",
 						"exec": [
-							"eval(pm.collectionVariables.get(\"SrcCode_FolderTests\"));"
+							""
 						]
 					}
 				}
 			]
 		},
 		{
-			"name": "Collection and Request Level Tests",
-			"event": [
+			"name": "Reset",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"REQUEST Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
+					"name": "Delete Collection",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/collections/{{UID_collection}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"collections",
+								"{{UID_collection}}"
+							]
+						}
+					},
+					"response": []
 				},
 				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
+					"name": "Delete environment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/environments/{{UID_environment}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"environments",
+								"{{UID_environment}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Mock",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/mocks/{{UID_mock}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"mocks",
+								"{{UID_mock}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Version",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Monitor",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/monitors/{{UID_monitor}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"monitors",
+								"{{UID_monitor}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}"
+							]
+						}
+					},
+					"response": []
 				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://postman-echo.com/get",
-					"protocol": "https",
-					"host": [
-						"postman-echo",
-						"com"
-					],
-					"path": [
-						"get"
-					]
+			]
+		},
+		{
+			"name": "Test",
+			"item": [
+				{
+					"name": "Get collection",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{postmanAPIKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/collections/{{UID_collection}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"collections",
+								"{{UID_collection}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	],
 	"auth": {
@@ -132,7 +758,7 @@
 		"apikey": [
 			{
 				"key": "value",
-				"value": "{{postmanAPIKey}}",
+				"value": "",
 				"type": "string"
 			},
 			{
@@ -157,38 +783,6 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"//eval(pm.collectionVariables.get(\"SrcCode_getCollectionTests\"));",
-					"",
-					"/*",
-					" * Example showing the code to retrieve snippets from GitHub",
-					" * at the collection level.  Stored in the SrcCode_getCollectionTests",
-					" * environment variable",
-					"*/",
-					"//Setup the URL components",
-					"var owner = pm.collectionVariables.get(\"owner\");",
-					"var GitHub_repoSlug = pm.collectionVariables.get(\"GitHub_repoSlug\");",
-					"var path = pm.collectionVariables.get(\"Path_CollectionTestCode\");",
-					"var token = pm.collectionVariables.get(\"GitHub_PAT\");",
-					"var baseUrl = pm.collectionVariables.get(\"baseUrl\");",
-					"//Build the URL",
-					"var url = baseUrl + \"/repos/\" + GitHub_repoSlug + \"/contents/\" + path;",
-					"console.log(\"URL: \" + url);",
-					"const postRequest = {",
-					"  url: url,",
-					"  method: 'get',",
-					"  header: {",
-					"    'Content-Type': 'application/json',",
-					"    'Authorization': 'bearer ' + token",
-					"  }",
-					"};",
-					"pm.sendRequest(postRequest, (err, res) => {",
-					"    var jsonData = JSON.parse(res.text());",
-					"var base64content = jsonData.content;",
-					"var buff = new Buffer(base64content, 'base64');",
-					"var content = buff.toString('ascii');",
-					"pm.collectionVariables.set(\"SrcCode_CollectionTests\", content);",
-					"});",
-					"",
 					""
 				]
 			}
@@ -196,53 +790,89 @@
 	],
 	"variable": [
 		{
-			"key": "postmanAPIKey",
-			"value": "<<Do not set initial value>>",
+			"key": "GitHubPAT",
+			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "GitHub_baseURL\n",
+			"key": "postmanAPIKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "GitHubBaseURL",
 			"value": "https://api.github.com",
 			"type": "string"
 		},
 		{
-			"key": "GitHub_PAT",
-			"value": "<<Your properly scoped GitHub PAT>>",
-			"type": "string"
-		},
-		{
-			"key": "GitHub_repoSlug",
+			"key": "GitHubRepoSlug",
 			"value": "bryancross/Postman-stuff",
 			"type": "string"
 		},
 		{
-			"key": "GitHub_\nPath_CollectionTestCode",
-			"value": "test-snippets/collection-level-tests.js",
+			"key": "GitHubRepoPath",
+			"value": "postman/schemas",
 			"type": "string"
 		},
 		{
-			"key": "GitHub_\nPath_FolderTestCode",
-			"value": "test-snippets/folder-level-tests.js",
+			"key": "GitHubSchemaFilename",
+			"value": "catfacts.json",
 			"type": "string"
 		},
 		{
-			"key": "SrcCode_CollectionTests",
-			"value": "<<Set at runtime>>"
-		},
-		{
-			"key": "SrcCode_FolderTests",
-			"value": "<<Set at Runtime>>",
+			"key": "schemaTitle",
+			"value": "<<set at runtime>>",
 			"type": "string"
 		},
 		{
-			"key": "SrcCode_getCollectionTests",
-			"value": "/*\n * Example showing the code to retrieve snippets from GitHub\n * at the collection level.  Stored in the SrcCode_getCollectionTests\n * environment variable\n*/\n\n//Setup the URL components\nvar owner = pm.collectionVariables.get(\"owner\");\nvar GitHub_repoSlug = pm.collectionVariables.get(\"GitHub_repoSlug\");\nvar path = pm.collectionVariables.get(\"Path_CollectionTestCode\");\nvar token = pm.collectionVariables.get(\"GitHub_PAT\");\nvar baseUrl = pm.collectionVariables.get(\"baseUrl\");\n//Build the URL\nvar url = baseUrl + \"/repos/\" + GitHub_repoSlug + \"/contents/\" + path;\nconsole.log(\"URL: \" + url);\nconst postRequest = {\n  url: url,\n  method: 'get',\n  header: {\n    'Content-Type': 'application/json',\n    'Authorization': 'bearer ' + token\n  }\n};\npm.sendRequest(postRequest, (err, res) => {\n    var jsonData = JSON.parse(res.text());\nvar base64content = jsonData.content;\nvar buff = new Buffer(base64content, 'base64');\nvar content = buff.toString('ascii');\npm.collectionVariables.set(\"SrcCode_CollectionTests\", content);\n\n});",
+			"key": "string_schema",
+			"value": "<<set at runtime>>",
 			"type": "string"
 		},
 		{
-			"key": "SrcCode_getFolderTests",
-			"value": "/*\n * Example showing the code to retrieve snippets from GitHub\n * at the collection level.  Stored in the SrcCode_getCollectionTests\n * environment variable\n*/\n//Setup the URL components\nvar owner = pm.collectionVariables.get(\"owner\");\nvar GitHub_repoSlug = pm.collectionVariables.get(\"GitHub_repoSlug\");\nvar path = pm.collectionVariables.get(\"Path_FolderTestCode\");\nvar token = pm.collectionVariables.get(\"GitHub_PAT\");\nvar baseUrl = pm.collectionVariables.get(\"baseUrl\");\n//Build the URL\nvar url = baseUrl + \"/repos/\" + GitHub_repoSlug + \"/contents/\" + path;\nconsole.log(\"URL: \" + url);\nconst postRequest = {\n  url: url,\n  method: 'get',\n  header: {\n    'Content-Type': 'application/json',\n    'Authorization': 'bearer ' + token\n  }\n};\npm.sendRequest(postRequest, (err, res) => {\n    var jsonData = JSON.parse(res.text());\nvar base64content = jsonData.content;\nvar buff = new Buffer(base64content, 'base64');\nvar content = buff.toString('ascii');\npm.collectionVariables.set(\"SrcCode_FolderTests\", content);\n});",
+			"key": "UID_TargetWorkspace",
+			"value": "<<Workspace ID in which to create assets>>",
 			"type": "string"
+		},
+		{
+			"key": "UID_API",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_apiVersion",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_schema",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_collection",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_mock",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "URL_mock",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_environment",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_monitor",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "randomInt",
+			"value": ""
 		}
 	]
 }
