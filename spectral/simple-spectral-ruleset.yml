@@ -1,7 +1,7 @@
 rules:
 
   BRKC-api-name-must-not-contain-api:
-    description: The API name must not contain the word API
+    description: BRKC-The API name must not contain the word API
     message: The info.title value "{{value}}" contains the forbidden word API
     severity: error
     formats:
@@ -16,7 +16,7 @@ rules:
           notMatch: /\b(api)\b/i
 
   BRKC-ensure-API-description:
-    description: The API itself must have a description
+    description: BRKC-The API itself must have a description
     given: $.info
     severity: error
     message: API specifications must have a description
@@ -25,7 +25,7 @@ rules:
       function: truthy   
 
   BRKC-ensure-param-description:
-    description: Parameters must have a description.
+    description: BRKC-Parameters must have a description.
     given: $.paths.*.*.parameters
     severity: error
     message: All parameters must have a description
@@ -35,7 +35,7 @@ rules:
 
 
   BRKC-ensure-endpoint-summary:
-    description: Endpoints must have a summary.
+    description: BRKC-Endpoints must have a summary.
     given: $.paths.*.*
     severity: error
     message: All endpoints must have a summary

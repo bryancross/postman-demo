@@ -1,0 +1,909 @@
+{
+	"info": {
+		"_postman_id": "f931deea-851b-4122-8463-1888983b325e",
+		"name": "Accounts",
+		"description": "Endpoints for Retail Banking Accounts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23583821"
+	},
+	"item": [
+		{
+			"name": "Statement",
+			"item": [
+				{
+					"name": "Latest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Opening balance is a number\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.balance.opening).to.not.be.NaN",
+									"});",
+									"",
+									"pm.test(\"Closing balance is a number\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.balance.closing).to.not.be.NaN",
+									"});",
+									"",
+									"pm.test(\"Statement has a from date\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.period.from).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Statement has a to date\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.period.to).to.not.be.null;",
+									"});",
+									"",
+									"",
+									"const template = `",
+									"    <style>",
+									"        .summary ul {",
+									"            list-style-type: none;",
+									"        }",
+									"        .summary div {",
+									"            display: inline-block;",
+									"            width: 33%;",
+									"        }",
+									"    </style>",
+									"    <link rel=\"stylesheet\" href=\"https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css\">",
+									"    <script src=\"https://code.jquery.com/jquery-3.5.1.min.js\"></script>",
+									"    <script src=\"https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js\"></script>",
+									"    <h1>PM Bank</h1>",
+									"    <div class=\"summary\">",
+									"        <div>",
+									"            <ul>",
+									"                <li><strong>Statement: </strong> {{res.period}}</li>",
+									"                <li><strong>Opening balance: </strong> \\${{res.balance.opening}}</li>",
+									"                <li><strong>Closing balance: </strong> \\${{res.balance.closing}}</li>",
+									"            </ul>",
+									"        </div>",
+									"        <div>",
+									"            <ul>",
+									"                <li><strong>Account: </strong> {{accountNumber}}</li>",
+									"                <li><strong>Money in: </strong> \\${{res.money.in}}</li>",
+									"                <li><strong>Money out: </strong> \\${{res.money.out}}</li>",
+									"            </ul>",
+									"        </div>",
+									"    </div>",
+									"    <div class=\"table\">",
+									"        <table>",
+									"            <thead>",
+									"                <tr>",
+									"                    <th>Date</th>",
+									"                    <th>Type</th>",
+									"                    <th>Description</th>",
+									"                    <th>Amount</th>",
+									"                    <th>Balance</th>",
+									"                </tr>",
+									"            </thead>",
+									"            <tbody>",
+									"            {{#each res.transactions}}",
+									"                <tr>",
+									"                    <td>{{date}}</td>",
+									"                    <td>{{type}}</td>",
+									"                    <td>{{description}}</td>",
+									"                    <td>{{amount}}</td>",
+									"                    <td>{{balance}}</td>",
+									"                </tr>",
+									"            {{/each}}",
+									"            </tbody>",
+									"        </table>",
+									"    </div>",
+									"",
+									"    <script>",
+									"        $('table').DataTable()",
+									"    </script>",
+									"`",
+									"const accountNumber = pm.globals.get('accountNumber');",
+									"pm.visualizer.set(template, {",
+									"    // Pass the response body parsed as JSON as `data`",
+									"    response: pm.response.json()",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/{{accountNumber}}/statement/latest",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"{{accountNumber}}",
+								"statement",
+								"latest"
+							],
+							"variable": [
+								{
+									"key": "accountNumber",
+									"value": "nostrud",
+									"type": "string",
+									"description": "(Required) "
+								}
+							]
+						},
+						"description": "Use the Statement/Latest to see the account and balance of your user."
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/accounts/{{accountNumber}}/statement/latest",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"accounts",
+										"{{accountNumber}}",
+										"statement",
+										"latest"
+									]
+								}
+							},
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"period\": \"latest\",\n    \"balance\": {\n        \"opening\": 482.98,\n        \"closing\": 606.15\n    },\n    \"money\": {\n        \"in\": 485.45,\n        \"out\": 796.29\n    },\n    \"transactions\": [\n        {\n            \"date\": \"Thu Oct 13 2022 05:25:31 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Keebler - Thiel\",\n            \"type\": \"invoice\",\n            \"amount\": 488.71,\n            \"balance\": 173.63\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 03:26:45 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Schulist Group\",\n            \"type\": \"withdrawal\",\n            \"amount\": 44.24,\n            \"balance\": 102.00\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 16:34:03 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Hammes, Cummings and Kerluke\",\n            \"type\": \"withdrawal\",\n            \"amount\": 631.22,\n            \"balance\": 374.31\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 06:45:45 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Jacobson, Cronin and King\",\n            \"type\": \"payment\",\n            \"amount\": 599.29,\n            \"balance\": 397.48\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 17:03:36 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Kautzer, Kreiger and Gerhold\",\n            \"type\": \"deposit\",\n            \"amount\": 804.79,\n            \"balance\": 943.04\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 22:55:33 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Lueilwitz, Reichel and Effertz\",\n            \"type\": \"deposit\",\n            \"amount\": 608.91,\n            \"balance\": 700.80\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 17:18:59 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Medhurst Group\",\n            \"type\": \"payment\",\n            \"amount\": 462.00,\n            \"balance\": 367.99\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 06:24:38 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Cole, Crist and Greenholt\",\n            \"type\": \"payment\",\n            \"amount\": 24.40,\n            \"balance\": 951.91\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 16:41:20 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Kunze and Sons\",\n            \"type\": \"withdrawal\",\n            \"amount\": 781.65,\n            \"balance\": 551.51\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 00:02:48 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Reilly LLC\",\n            \"type\": \"deposit\",\n            \"amount\": 802.44,\n            \"balance\": 931.81\n        }\n    ]\n}"
+						},
+						{
+							"name": "Latest",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/accounts/{{accountNumber}}/statement/latest",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"accounts",
+										"{{accountNumber}}",
+										"statement",
+										"latest"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 25 Jun 2021 23:51:59 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "x-srv-trace",
+									"value": "v=1;t=ee5168766e2c79e7"
+								},
+								{
+									"key": "x-srv-span",
+									"value": "v=1;s=dec12f24dca08efd"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "120"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "119"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1624665179"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"a71-52rmr9h/UALlkJSmb5YLzGrYK6M\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"period\": \"latest\",\n    \"balance\": {\n        \"opening\": 870.27,\n        \"closing\": 54.64\n    },\n    \"money\": {\n        \"in\": 464.03,\n        \"out\": 974.2\n    },\n    \"transactions\": [\n        {\n            \"date\": \"Fri Jun 25 2021 21:58:26 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Kunde LLC\",\n            \"type\": \"withdrawal\",\n            \"amount\": 225.99,\n            \"balance\": 878.82\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 17:19:48 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Hermann - Rice\",\n            \"type\": \"payment\",\n            \"amount\": 994.54,\n            \"balance\": 340.84\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 15:04:34 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Crona, Robel and Brakus\",\n            \"type\": \"deposit\",\n            \"amount\": 793.19,\n            \"balance\": 85.51\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 01:40:29 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Gutkowski - Hilpert\",\n            \"type\": \"deposit\",\n            \"amount\": 470.73,\n            \"balance\": 723.76\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 00:50:31 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Ortiz, Steuber and Conn\",\n            \"type\": \"deposit\",\n            \"amount\": 697.93,\n            \"balance\": 189.47\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 16:59:17 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Kunze, Will and Hermann\",\n            \"type\": \"withdrawal\",\n            \"amount\": 813.08,\n            \"balance\": 80.59\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 20:26:01 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Grant, Swaniawski and Cremin\",\n            \"type\": \"deposit\",\n            \"amount\": 236.16,\n            \"balance\": 365.98\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 07:26:30 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Kuhn - Monahan\",\n            \"type\": \"invoice\",\n            \"amount\": 621.22,\n            \"balance\": 600.04\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 17:26:45 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Bernhard Inc\",\n            \"type\": \"withdrawal\",\n            \"amount\": 718.87,\n            \"balance\": 381.78\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 10:26:39 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Berge - Weimann\",\n            \"type\": \"payment\",\n            \"amount\": 256.74,\n            \"balance\": 731.77\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Opening balance is a number\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.balance.opening).to.not.be.NaN",
+									"});",
+									"",
+									"pm.test(\"Closing balance is a number\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.balance.closing).to.not.be.NaN",
+									"});",
+									"",
+									"pm.test(\"Statement has a from date\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.period.from).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Statement has a to date\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.period.to).to.not.be.null;",
+									"});",
+									"",
+									"const template = `",
+									"    <style>",
+									"        .summary ul {",
+									"            list-style-type: none;",
+									"        }",
+									"        .summary div {",
+									"            display: inline-block;",
+									"            width: 33%;",
+									"        }",
+									"    </style>",
+									"    <link rel=\"stylesheet\" href=\"https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css\">",
+									"    <script src=\"https://code.jquery.com/jquery-3.5.1.min.js\"></script>",
+									"    <script src=\"https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js\"></script>",
+									"    <h1>PM Bank</h1>",
+									"    <div class=\"summary\">",
+									"        <div>",
+									"            <ul>",
+									"                <li><strong>Statement: </strong> {{res.period}}</li>",
+									"                <li><strong>Opening balance: </strong> \\${{res.balance.opening}}</li>",
+									"                <li><strong>Closing balance: </strong> \\${{res.balance.closing}}</li>",
+									"            </ul>",
+									"        </div>",
+									"        <div>",
+									"            <ul>",
+									"                <li><strong>Account: </strong> {{accountNumber}}</li>",
+									"                <li><strong>Money in: </strong> \\${{res.money.in}}</li>",
+									"                <li><strong>Money out: </strong> \\${{res.money.out}}</li>",
+									"            </ul>",
+									"        </div>",
+									"    </div>",
+									"    <div class=\"table\">",
+									"        <table>",
+									"            <thead>",
+									"                <tr>",
+									"                    <th>Date</th>",
+									"                    <th>Type</th>",
+									"                    <th>Description</th>",
+									"                    <th>Amount</th>",
+									"                    <th>Balance</th>",
+									"                </tr>",
+									"            </thead>",
+									"            <tbody>",
+									"            {{#each res.transactions}}",
+									"                <tr>",
+									"                    <td>{{date}}</td>",
+									"                    <td>{{type}}</td>",
+									"                    <td>{{description}}</td>",
+									"                    <td>{{amount}}</td>",
+									"                    <td>{{balance}}</td>",
+									"                </tr>",
+									"            {{/each}}",
+									"            </tbody>",
+									"        </table>",
+									"    </div>",
+									"",
+									"    <script>",
+									"        $('table').DataTable()",
+									"    </script>",
+									"`",
+									"const accountNumber = pm.globals.get('accountNumber');",
+									"pm.visualizer.set(template, {",
+									"    // Pass the response body parsed as JSON as `data`",
+									"    response: pm.response.json()",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "from",
+									"value": "Sun Jun 19 2022 04:32:04 GMT-0500 (Central Daylight Time)",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "Thu Oct 13 2022 08:17:15 GMT-0500 (Central Daylight Time)",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/accounts/{{accountNumber}}/statement/date",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"{{accountNumber}}",
+								"statement",
+								"date"
+							]
+						},
+						"description": "Use the statement/date endpoint to retrieve the dates of the transactions"
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/accounts/{{accountNumber}}/statement/date",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"accounts",
+										"{{accountNumber}}",
+										"statement",
+										"date"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Mon, 14 Jun 2021 14:30:25 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "x-srv-trace",
+									"value": "v=1;t=d33d68b932344fce"
+								},
+								{
+									"key": "x-srv-span",
+									"value": "v=1;s=210e5b055e5bd71e"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "120"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "119"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1623681083"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"96-S/5iQ2y1qqIInh5BwoPc+chvDJU\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"period\": {\n        \"from\": \"Mon Jul 25 2022 13:35:34 GMT-0500 (Central Daylight Time)\",\n        \"to\": \"Wed Oct 12 2022 23:16:35 GMT-0500 (Central Daylight Time)\"\n    },\n    \"balance\": {\n        \"opening\": 330.06,\n        \"closing\": 56.93\n    },\n    \"money\": {\n        \"in\": 37.43,\n        \"out\": 263.58\n    },\n    \"transactions\": [\n        {\n            \"date\": \"Thu Oct 13 2022 12:59:23 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Schulist - Lehner\",\n            \"type\": \"invoice\",\n            \"amount\": 125.97,\n            \"balance\": 202.17\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 16:34:11 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Kuphal - Bechtelar\",\n            \"type\": \"withdrawal\",\n            \"amount\": 933.85,\n            \"balance\": 786.40\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 23:39:30 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Beatty, Bosco and Kris\",\n            \"type\": \"deposit\",\n            \"amount\": 1.97,\n            \"balance\": 589.57\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 11:19:55 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Dooley, Parker and Oberbrunner\",\n            \"type\": \"payment\",\n            \"amount\": 39.17,\n            \"balance\": 118.26\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 22:54:19 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Ziemann - Rath\",\n            \"type\": \"invoice\",\n            \"amount\": 924.32,\n            \"balance\": 470.11\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 08:47:26 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Spinka, Beatty and Witting\",\n            \"type\": \"payment\",\n            \"amount\": 146.79,\n            \"balance\": 748.40\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 03:09:49 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Jones - Stanton\",\n            \"type\": \"withdrawal\",\n            \"amount\": 821.30,\n            \"balance\": 136.32\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 00:50:10 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Abbott, Gibson and Emmerich\",\n            \"type\": \"deposit\",\n            \"amount\": 783.58,\n            \"balance\": 135.88\n        },\n        {\n            \"date\": \"Thu Oct 13 2022 06:44:22 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Muller LLC\",\n            \"type\": \"deposit\",\n            \"amount\": 943.13,\n            \"balance\": 252.84\n        },\n        {\n            \"date\": \"Wed Oct 12 2022 21:41:46 GMT-0500 (Central Daylight Time)\",\n            \"description\": \"Hessel and Sons\",\n            \"type\": \"withdrawal\",\n            \"amount\": 431.70,\n            \"balance\": 440.88\n        }\n    ]\n}"
+						},
+						{
+							"name": "Date",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/accounts/{{accountNumber}}/statement/date",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"accounts",
+										"{{accountNumber}}",
+										"statement",
+										"date"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 25 Jun 2021 23:52:14 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "x-srv-trace",
+									"value": "v=1;t=d33d68b932344fce"
+								},
+								{
+									"key": "x-srv-span",
+									"value": "v=1;s=210e5b055e5bd71e"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "120"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "119"
+								},
+								{
+									"key": "X-RateLimit-Reset",
+									"value": "1623681083"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"96-S/5iQ2y1qqIInh5BwoPc+chvDJU\""
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"period\": {\n        \"from\": \"Wed Mar 17 2021 16:04:09 GMT+0000 (Coordinated Universal Time)\",\n        \"to\": \"Fri Jun 25 2021 10:12:14 GMT+0000 (Coordinated Universal Time)\"\n    },\n    \"balance\": {\n        \"opening\": 682.09,\n        \"closing\": 481.85\n    },\n    \"money\": {\n        \"in\": 694.86,\n        \"out\": 541.04\n    },\n    \"transactions\": [\n        {\n            \"date\": \"Fri Jun 25 2021 19:03:47 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Schinner - Schowalter\",\n            \"type\": \"payment\",\n            \"amount\": 9.24,\n            \"balance\": 957.17\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 14:22:51 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"McLaughlin - Steuber\",\n            \"type\": \"deposit\",\n            \"amount\": 664.71,\n            \"balance\": 645.25\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 12:55:27 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Dicki Group\",\n            \"type\": \"deposit\",\n            \"amount\": 907.42,\n            \"balance\": 795.62\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 02:45:45 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Osinski Inc\",\n            \"type\": \"invoice\",\n            \"amount\": 240.24,\n            \"balance\": 93.44\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 21:36:47 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Homenick, Hoppe and Grimes\",\n            \"type\": \"payment\",\n            \"amount\": 879.51,\n            \"balance\": 885.84\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 18:55:21 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Sauer - Turcotte\",\n            \"type\": \"invoice\",\n            \"amount\": 436.22,\n            \"balance\": 450.93\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 17:53:44 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Oberbrunner Group\",\n            \"type\": \"invoice\",\n            \"amount\": 995.82,\n            \"balance\": 354.77\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 10:41:51 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Dooley LLC\",\n            \"type\": \"withdrawal\",\n            \"amount\": 886.28,\n            \"balance\": 906.21\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 18:44:34 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Haley - Buckridge\",\n            \"type\": \"payment\",\n            \"amount\": 42.23,\n            \"balance\": 701.92\n        },\n        {\n            \"date\": \"Fri Jun 25 2021 04:02:49 GMT+0000 (Coordinated Universal Time)\",\n            \"description\": \"Breitenberg and Sons\",\n            \"type\": \"deposit\",\n            \"amount\": 570.68,\n            \"balance\": 524.37\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json();",
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"type\": \"Investment Account\",\n    \"holder\": \"{{customerId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/accounts/create",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"accounts",
+						"create"
+					]
+				},
+				"description": "Hi everyone."
+			},
+			"response": [
+				{
+					"name": "200 OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"Money Market Account\",\n    \"holder\": {\n        \"name\": {\n            \"first\": \"Annabelle\",\n            \"middle\": \"Gennaro\",\n            \"last\": \"Koch\"\n        },\n        \"dob\": \"Sat Aug 13 2022 00:22:39 GMT-0500 (Central Daylight Time)\",\n        \"address\": {\n            \"street\": \"5867 Feest Hollow\",\n            \"city\": \"South Emmett\",\n            \"country\": \"Equatorial Guinea\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"create"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"Credit Card Account\",\n    \"details\": {\n        \"domestic\": {\n            \"account\": \"64005537\",\n            \"routing\": \"26719801\"\n        },\n        \"international\": {\n            \"bic\": \"JBSINOY1\",\n            \"iban\": \"DE49008671249622299690\"\n        }\n    }\n}"
+				},
+				{
+					"name": "Create",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"Credit Card Account\",\n    \"holder\": \"{{customerId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"create"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Fri, 25 Jun 2021 23:52:25 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "x-srv-trace",
+							"value": "v=1;t=26fe3c1bfa5dec73"
+						},
+						{
+							"key": "x-srv-span",
+							"value": "v=1;s=c3740f62c6b76249"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "120"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "117"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1624665179"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"110-iW1c+CMeBSsc0hEJz1VrylclWEc\""
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"Home Loan Account\",\n    \"details\": {\n        \"domestic\": {\n            \"account\": \"18924483\",\n            \"routing\": \"21804671\"\n        },\n        \"international\": {\n            \"bic\": \"UYUEPTC1\",\n            \"iban\": \"EE400911030046200371\"\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Overview",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Balance (Available) is a number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.balance.available).to.not.be.NaN",
+							"});",
+							"",
+							"pm.test(\"Balance (Present) is a number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.balance.closing).to.not.be.NaN",
+							"});",
+							"",
+							"",
+							"",
+							"const template = `",
+							"    <style>",
+							"        .account-overview {",
+							"            width: 80%;",
+							"            margin: 0 auto;",
+							"            border: 1px solid black;",
+							"            padding: 10px;",
+							"        }",
+							"",
+							"        .account-overview div {",
+							"            display: inline-block;",
+							"            width: 31%;",
+							"            background: #efefef;",
+							"            padding: 20px;",
+							"            box-sizing: border-box;",
+							"            margin-right: 10px;",
+							"        }",
+							"",
+							"        .account-overview p {",
+							"            line-height: 0px;",
+							"            word-wrap: wrap;",
+							"        }",
+							"",
+							"        .account-overview ul {",
+							"            list-style-type: none;",
+							"        }",
+							"    </style>",
+							"    <div class=\"account-overview\">",
+							"        <h3>PM Bank</h3>",
+							"        <ul>",
+							"            <li><strong>Account type:</strong> {{res.type}}</li>",
+							"            <li><strong>Interest rate:</strong> {{res.interestRate}}%</li>",
+							"            <li><strong>Last statement date:</strong> {{res.lastStatementDate}}</li>",
+							"        </ul>",
+							"        <div>",
+							"            <h5>Balance</h5>",
+							"            <p><strong>Available:</strong> \\${{res.balance.available}}</p>",
+							"            <p><strong>Present:</strong> \\${{res.balance.present}}</p>",
+							"        </div>",
+							"        <div>",
+							"            <h5>Domestic details</h5>",
+							"            <p><strong>Account No:</strong> {{res.details.domestic.account}}</p>",
+							"            <p><strong>Routing No:</strong> {{res.details.domestic.routing}}</p>",
+							"        </div>",
+							"        <div>",
+							"            <h5>Intl details</h5>",
+							"            <p><strong>BIC:</strong> {{res.details.international.bic}}</p>",
+							"            <p><strong>IBAN:</strong> {{res.details.international.bic}}</p>",
+							"        </div>",
+							"    </div>",
+							"",
+							"",
+							"`",
+							"pm.visualizer.set(template, {",
+							"    // Pass the response body parsed as JSON as `data`",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/accounts/{{accountNumber}}/overview",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"accounts",
+						"{{accountNumber}}",
+						"overview"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "200 OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/{{accountNumber}}/overview",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"{{accountNumber}}",
+								"overview"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"type\": \"Auto Loan Account\",\n    \"balance\": {\n        \"available\": 336.44,\n        \"present\": 505.11\n    },\n    \"details\": {\n        \"domestic\": {\n            \"account\": \"58968320\",\n            \"routing\": \"15026044\"\n        },\n        \"international\": {\n            \"bic\": \"RYFIMDO1\",\n            \"iban\": \"GT2854533X5589546D7527A17772\"\n        }\n    },\n    \"interestRate\": 0.01,\n    \"lastStatementDate\": \"Thu Oct 13 2022 09:30:34 GMT-0500 (Central Daylight Time)\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "accountNumber",
+			"value": "277726",
+			"type": "string"
+		},
+		{
+			"key": "url",
+			"value": "https://354b9d62-bd7e-40d7-863c-7b02c5b83585.mock.pstmn.io/",
+			"type": "string"
+		}
+	]
+}

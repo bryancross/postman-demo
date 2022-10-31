@@ -2,9 +2,13 @@
 	"info": {
 		"_postman_id": "41cb99df-59da-4568-9a31-68bbdd1a379b",
 		"name": "Publish to Partner Workspace",
+<<<<<<< HEAD
 		"description": "# Create Rest Assets\n\nStandardizing practices & process automation by\n\n*   Automating controls\n*   Enforcing standards\n*   Generating evidence\n    \n\n![](https://i.imgur.com/9E9b8gf.png)",
+=======
+		"description": "Standardizing practices & process automation by\n\n- Automating controls\n- Enforcing standards\n- Generating evidence\n    \n\n<img src=\"https://i.imgur.com/9E9b8gf.png\" alt=\"\">",
+>>>>>>> 3396f62 (Updating demo stuff)
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "23357111"
+		"_exporter_id": "23889826"
 	},
 	"item": [
 		{
@@ -18,12 +22,55 @@
 							"script": {
 								"exec": [
 									"var jsonData = JSON.parse(pm.response.text());",
+<<<<<<< HEAD
 									"var base64content = jsonData.content;",
 									"var buff = new Buffer(base64content, 'base64');",
 									"var content = buff.toString('ascii');",
 									"let schemaJSON = JSON.stringify(JSON.parse(buff.toString('ascii'))); ",
 									"pm.collectionVariables.set(\"string_schema\",  (JSON.stringify(schemaJSON)).substr(1).slice(0, -1));",
 									"pm.collectionVariables.set(\"schemaTitle\",JSON.parse(content).info.title);",
+=======
+									"",
+									"var base64content = jsonData.content;",
+									"",
+									"var buff = new Buffer(base64content, 'base64');",
+									"",
+									"var content = buff.toString('ascii');",
+									"",
+									"var lang = pm.collectionVariables.get(\"GitHubSchemaFilename\").split('.')[1];",
+									"pm.collectionVariables.set(\"schemaLanguage\", lang);",
+									"let title = \"\";",
+									"if(lang === 'json')",
+									"{",
+									"    ",
+									"    let schemaJSON = JSON.stringify(JSON.parse(content));",
+									"    pm.collectionVariables.set(\"string_schema\",  (JSON.stringify(schemaJSON)).substr(1).slice(0, -1));",
+									"    pm.collectionVariables.set(\"schemaTitle\",(JSON.parse(content).info.title).trim());",
+									"}",
+									"else if (lang === 'yml' || lang === 'yaml')",
+									"{",
+									"    ",
+									"    let yaml = content.split('\\n');",
+									"    for(i = 0; i < yaml.length; i++)",
+									"    {",
+									"        if(yaml[i].includes(\"title:\"))",
+									"        {",
+									"            title = yaml[i].split(\":\")[1];",
+									"            break;",
+									"        }",
+									"    }",
+									"    if(title === null){",
+									"        title = pm.collectionVariables(\"GitHubSchemaFilename\").split(\".\")[0];",
+									"    }",
+									"    pm.collectionVariables.set(\"string_schema\", content);",
+									"    pm.collectionVariables.set(\"schemaTitle\",title.trim());",
+									"    ",
+									"}",
+									"",
+									"",
+									"",
+									"",
+>>>>>>> 3396f62 (Updating demo stuff)
 									"",
 									"",
 									"",
@@ -43,9 +90,12 @@
 									"pm.collectionVariables.set(\"UID_schema\",\"\");",
 									"pm.collectionVariables.set(\"string_schema\",\"\");",
 									"",
+<<<<<<< HEAD
 									"",
 									"",
 									"",
+=======
+>>>>>>> 3396f62 (Updating demo stuff)
 									"pm.collectionVariables.set(\"UID_environment\",\"\");",
 									"pm.collectionVariables.set(\"UID_monitor\",\"\");",
 									"pm.collectionVariables.set(\"UID_mock\",\"\");",
@@ -233,7 +283,11 @@
 						],
 						"body": {
 							"mode": "raw",
+<<<<<<< HEAD
 							"raw": "{\n\t\"schema\": {\n\t\t\"language\": \"json\",\n\t\t\"schema\":\"{{string_schema}}\",\n\t\t\"type\": \"openapi3\"\n\t}\n}"
+=======
+							"raw": "{\n\t\"schema\": {\n\t\t\"language\": \"{{schemaLanguage}}\",\n\t\t\"schema\":\"{{string_schema}}\",\n\t\t\"type\": \"openapi3\"\n\t}\n}"
+>>>>>>> 3396f62 (Updating demo stuff)
 						},
 						"url": {
 							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas",
@@ -806,6 +860,7 @@
 		},
 		{
 			"key": "GitHubRepoSlug",
+<<<<<<< HEAD
 			"value": "bryancross/Postman-stuff",
 			"type": "string"
 		},
@@ -821,10 +876,33 @@
 		},
 		{
 			"key": "schemaTitle",
+=======
+			"value": "bryancross/postman-demo",
+			"type": "string"
+		},
+		{
+			"key": "GitHubRepoPath",
+			"value": "postman/schemas",
+			"type": "string"
+		},
+		{
+			"key": "GitHubSchemaFilename",
+			"value": "dirty-catfacts.yml",
+			"type": "string"
+		},
+		{
+			"key": "schemaTitle",
 			"value": "<<set at runtime>>",
 			"type": "string"
 		},
 		{
+			"key": "string_schema",
+>>>>>>> 3396f62 (Updating demo stuff)
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+<<<<<<< HEAD
 			"key": "string_schema",
 			"value": "<<set at runtime>>",
 			"type": "string"
@@ -832,6 +910,55 @@
 		{
 			"key": "UID_TargetWorkspace",
 			"value": "<<Workspace ID in which to create assets>>",
+=======
+			"key": "UID_TargetWorkspace",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "UID_API",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_apiVersion",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_schema",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_collection",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_mock",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "URL_mock",
+			"value": "<<set at runtime>>",
+			"type": "string"
+		},
+		{
+			"key": "UID_environment",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "UID_monitor",
+			"value": "<<set at runtime>>"
+		},
+		{
+			"key": "randomInt",
+			"value": ""
+		},
+		{
+			"key": "schemaLanguage",
+			"value": "",
+>>>>>>> 3396f62 (Updating demo stuff)
 			"type": "string"
 		},
 		{
