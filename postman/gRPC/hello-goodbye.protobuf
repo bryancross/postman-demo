@@ -9,6 +9,7 @@ service HelloService {
   rpc LotsOfReplies(HelloRequest) returns (stream HelloResponse);
   rpc LotsOfGreetings(stream HelloRequest) returns (HelloResponse);
   rpc BidHello(stream HelloRequest) returns (stream HelloResponse);
+  rpc SayGoodbye(GoodbyeRequest) returns (GoodbyeResponse);
   }
 
 message HelloRequest {
