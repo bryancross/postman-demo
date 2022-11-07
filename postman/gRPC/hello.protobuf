@@ -18,11 +18,3 @@ message HelloRequest {
 message HelloResponse {
   required string reply = 1;
   }
-
-message GoodbyeResponse { 
-  required string reply = 1;
-  }
-
-message GoodbyeRequest {
-  required string goodbye = 1;
-  }
