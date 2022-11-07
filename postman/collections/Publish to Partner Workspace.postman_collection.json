@@ -26,6 +26,7 @@
 									"var content = buff.toString('ascii');",
 									"",
 									"var lang = pm.collectionVariables.get(\"GitHubSchemaFilename\").split('.')[1];",
+									"console.log(\"LANG: \" + lang);",
 									"pm.collectionVariables.set(\"schemaLanguage\", lang);",
 									"let title = \"\";",
 									"if(lang === 'json')",
@@ -38,7 +39,7 @@
 									"else if (lang === 'yml' || lang === 'yaml')",
 									"{",
 									"    ",
-									"    let yaml = content.split('\\n');",
+									"    /*let yaml = content.split('\\n');",
 									"    for(i = 0; i < yaml.length; i++)",
 									"    {",
 									"        if(yaml[i].includes(\"title:\"))",
@@ -50,8 +51,10 @@
 									"    if(title === null){",
 									"        title = pm.collectionVariables(\"GitHubSchemaFilename\").split(\".\")[0];",
 									"    }",
+									"    */",
 									"    pm.collectionVariables.set(\"string_schema\", content);",
-									"    pm.collectionVariables.set(\"schemaTitle\",title.trim());",
+									"    //pm.collectionVariables.set(\"schemaTitle\",title.trim());",
+									"    pm.collectionVariables.set(\"schemaTitle\",\"YAML API\");",
 									"    ",
 									"}",
 									"",
@@ -235,7 +238,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									""
+									"console.log(\"SCHEMA: \" + pm.collectionVariables.get(\"string_schema\"));"
 								],
 								"type": "text/javascript"
 							}
@@ -559,7 +562,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"mock\" : [\"{{UID_mock}}\"],\n    \"monitor\": [\"{{UID_monitor}}\"],\n    \"environment\" : [\"{{UID_environment}}\"]\n    \n}",
+							"raw": "{\n\t\"mock\" : [\"{{UID_mock}}\"],\n    \"monitor\": [\"{{UID_monitor}}\"],\n    \"environment\" : [\"{{UID_environment}}\"],\n    \"test\" : [\"{{UID_collection}}\"]\n    \n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -766,7 +769,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://api.getpostman.com/collections/{{UID_collection}}",
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/testsuite",
 							"protocol": "https",
 							"host": [
 								"api",
@@ -774,8 +777,78 @@
 								"com"
 							],
 							"path": [
-								"collections",
-								"{{UID_collection}}"
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"testsuite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get collection Copy",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{postmanAPIKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "x-api-key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/mocks/{{UID_mock}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"mocks",
+								"{{UID_mock}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Synch",
+			"item": [
+				{
+					"name": "Synch",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/mock/{{UID_mock}}/syncWithSchema",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"mock",
+								"{{UID_mock}}",
+								"syncWithSchema"
 							]
 						}
 					},
@@ -837,17 +910,17 @@
 		},
 		{
 			"key": "GitHubSchemaFilename",
-			"value": "dirty-catfacts.yml",
+			"value": "catfacts.json",
 			"type": "string"
 		},
 		{
 			"key": "schemaTitle",
-			"value": "<<set at runtime>>",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "string_schema",
-			"value": "<<set at runtime>>",
+			"value": "",
 			"type": "string"
 		},
 		{
@@ -857,22 +930,22 @@
 		},
 		{
 			"key": "UID_API",
-			"value": "<<set at runtime>>",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "UID_apiVersion",
-			"value": "<<set at runtime>>",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "UID_schema",
-			"value": "<<set at runtime>>",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "UID_collection",
-			"value": "<<set at runtime>>"
+			"value": ""
 		},
 		{
 			"key": "UID_mock",

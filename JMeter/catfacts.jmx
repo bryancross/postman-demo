@@ -121,14 +121,14 @@
             </elementProp>
             <elementProp name="logFile" elementType="Argument">
               <stringProp name="Argument.name">logFile</stringProp>
-              <stringProp name="Argument.value">./jmeter.log</stringProp>
+              <stringProp name="Argument.value">./results/jmeter.log</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>
         <hashTree/>
         <ResultSaver guiclass="ResultSaverGui" testclass="ResultSaver" testname="Save Responses to a file" enabled="true">
-          <stringProp name="FileSaver.filename">~/CatFacts/</stringProp>
+          <stringProp name="FileSaver.filename">~/results/CatFacts/</stringProp>
           <boolProp name="FileSaver.errorsonly">false</boolProp>
           <boolProp name="FileSaver.successonly">false</boolProp>
           <boolProp name="FileSaver.skipsuffix">false</boolProp>
@@ -171,7 +171,7 @@
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">~/summary.csv</stringProp>
+        <stringProp name="filename">~/results/summary.csv</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

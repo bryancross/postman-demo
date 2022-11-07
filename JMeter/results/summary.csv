@@ -1,0 +1,16 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1667488614131,433,get Breeds,200,OK,Cat Fact API 1-1,text,true,,785,184,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/breeds,429,0,242
+1667488614565,153,get Random Fact,200,OK,Cat Fact API 1-1,text,true,,460,182,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/fact,152,0,0
+1667488614721,270,Get a list of facts,200,OK,Cat Fact API 1-1,text,true,,534,183,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/facts,270,0,0
+1667488614994,175,get Breeds,200,OK,Cat Fact API 1-1,text,true,,785,184,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/breeds,175,0,0
+1667488615172,214,get Random Fact,200,OK,Cat Fact API 1-1,text,true,,460,182,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/fact,214,0,0
+1667488615389,184,Get a list of facts,200,OK,Cat Fact API 1-1,text,true,,534,183,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/facts,184,0,0
+1667488615575,144,get Breeds,200,OK,Cat Fact API 1-1,text,true,,785,184,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/breeds,144,0,0
+1667488615720,133,get Random Fact,200,OK,Cat Fact API 1-1,text,true,,460,182,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/fact,133,0,0
+1667488615855,195,Get a list of facts,200,OK,Cat Fact API 1-1,text,true,,534,183,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/facts,195,0,0
+1667488616052,193,get Breeds,200,OK,Cat Fact API 1-1,text,true,,785,184,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/breeds,193,0,0
+1667488616247,186,get Random Fact,200,OK,Cat Fact API 1-1,text,true,,460,182,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/fact,186,0,0
+1667488616434,168,Get a list of facts,200,OK,Cat Fact API 1-1,text,true,,534,183,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/facts,168,0,0
+1667488616603,159,get Breeds,200,OK,Cat Fact API 1-1,text,true,,785,184,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/breeds,159,0,0
+1667488616764,326,get Random Fact,200,OK,Cat Fact API 1-1,text,true,,460,182,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/fact,326,0,0
+1667488617092,163,Get a list of facts,200,OK,Cat Fact API 1-1,text,true,,534,183,1,1,https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io/facts,163,0,0
