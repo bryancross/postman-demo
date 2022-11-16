@@ -19,6 +19,9 @@ rules:
     description: BRKC-The API itself must have a description
     given: $.info
     severity: error
+    formats:
+      - oas2
+      - oas3
     message: API specifications must have a description
     then:
       field: description
@@ -28,6 +31,9 @@ rules:
     description: BRKC-Parameters must have a description.
     given: $.paths.*.*.parameters
     severity: error
+    formats:
+      - oas2
+      - oas3
     message: All parameters must have a description
     then:
       field: description
@@ -38,6 +44,9 @@ rules:
     description: BRKC-Endpoints must have a summary.
     given: $.paths.*.*
     severity: error
+    formats:
+      - oas2
+      - oas3
     message: All endpoints must have a summary
     then:
       field: summary
