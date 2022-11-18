@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "41cb99df-59da-4568-9a31-68bbdd1a379b",
+		"_postman_id": "3ae8e481-1d03-4f4e-9ac2-a64c20fda466",
 		"name": "Publish to Partner Workspace",
 		"description": "Standardizing practices & process automation by\n\n- Automating controls\n- Enforcing standards\n- Generating evidence\n    \n\n<img src=\"https://i.imgur.com/9E9b8gf.png\" alt=\"\">",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -33,13 +33,14 @@
 									"{",
 									"    ",
 									"    let schemaJSON = JSON.stringify(JSON.parse(content));",
-									"    pm.collectionVariables.set(\"string_schema\",  (JSON.stringify(schemaJSON)).substr(1).slice(0, -1));",
+									"    pm.collectionVariables.set(\"Schema\",  (JSON.stringify(schemaJSON)).substr(1).slice(0, -1));",
 									"    pm.collectionVariables.set(\"schemaTitle\",(JSON.parse(content).info.title).trim());",
 									"}",
 									"else if (lang === 'yml' || lang === 'yaml')",
 									"{",
 									"    ",
-									"    /*let yaml = content.split('\\n');",
+									"    lang = 'yaml';",
+									"    let yaml = content.split('\\n');",
 									"    for(i = 0; i < yaml.length; i++)",
 									"    {",
 									"        if(yaml[i].includes(\"title:\"))",
@@ -51,19 +52,32 @@
 									"    if(title === null){",
 									"        title = pm.collectionVariables(\"GitHubSchemaFilename\").split(\".\")[0];",
 									"    }",
-									"    */",
-									"    pm.collectionVariables.set(\"string_schema\", content);",
+									"",
+									"    console.log(\"TITLE: \" + title);",
+									"       ",
+									"    //escape the text to create valid JSON",
+									"    ",
+									"    //line breaks",
+									"    const newlineRegex = /(\\r\\n|\\n|\\r)/gm;",
+									"    content = content.replace(newlineRegex, \"\\\\n\");",
+									"    ",
+									"    //single and double quotes",
+									"    content.replace(/\"/g, '\\\\\"');",
+									"   ",
+									"    pm.collectionVariables.set(\"Schema\", content);",
 									"    //pm.collectionVariables.set(\"schemaTitle\",title.trim());",
-									"    pm.collectionVariables.set(\"schemaTitle\",\"YAML API\");",
+									"    pm.collectionVariables.set(\"schemaTitle\",title.trim());",
 									"    ",
 									"}",
 									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
 									"",
-									"",
-									"",
-									"",
-									"",
-									"",
+									"pm.test(\"Schema is not null\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.collectionVariables.get(\"Schema\")).to.not.be.null;",
+									"});",
 									""
 								],
 								"type": "text/javascript"
@@ -76,16 +90,14 @@
 									"",
 									"pm.collectionVariables.set(\"UID_apiVersion\",\"\");",
 									"pm.collectionVariables.set(\"UID_API\",\"\");",
-									"",
 									"pm.collectionVariables.set(\"UID_schema\",\"\");",
-									"pm.collectionVariables.set(\"string_schema\",\"\");",
-									"",
 									"pm.collectionVariables.set(\"UID_environment\",\"\");",
 									"pm.collectionVariables.set(\"UID_monitor\",\"\");",
 									"pm.collectionVariables.set(\"UID_mock\",\"\");",
 									"pm.collectionVariables.set(\"URL_mock\",\"\");",
 									"pm.collectionVariables.set(\"UID_collection\",\"\");",
 									"pm.collectionVariables.set(\"randomInt\",\"\");",
+									"pm.collectionVariables.set(\"Schema\",\"\");",
 									"pm.collectionVariables.set(\"schemaTitle\",\"\");"
 								],
 								"type": "text/javascript"
@@ -106,7 +118,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{GitHubBaseURL}}/repos/{{GitHubRepoSlug}}/contents/{{GitHubRepoPath}}/{{GitHubSchemaFilename}}",
+							"raw": "{{GitHubBaseURL}}/repos/{{GitHubRepoSlug}}/contents/{{GitHubRepoPath}}/{{GitHubSchemaFilename}}?TargetWorkspaceUID&GitHubRepoSlug&GitHubRepoPath&GitHubRepoFileName&GItHubAPT=",
 							"host": [
 								"{{GitHubBaseURL}}"
 							],
@@ -116,6 +128,28 @@
 								"contents",
 								"{{GitHubRepoPath}}",
 								"{{GitHubSchemaFilename}}"
+							],
+							"query": [
+								{
+									"key": "TargetWorkspaceUID",
+									"value": ""
+								},
+								{
+									"key": "GitHubRepoSlug",
+									"value": ""
+								},
+								{
+									"key": "GitHubRepoPath",
+									"value": ""
+								},
+								{
+									"key": "GitHubRepoFileName",
+									"value": ""
+								},
+								{
+									"key": "GItHubAPT",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -144,6 +178,7 @@
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
+									"",
 									"",
 									"pm.test(\"Should have valid response\", function () {",
 									"    pm.expect(jsonData.api).to.include.all.keys('id', 'name', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy');",
@@ -204,7 +239,16 @@
 									"const jsonData = pm.response.json();",
 									"// Set the DRAFT versionId as an env variable",
 									"pm.collectionVariables.set('UID_apiVersion', jsonData.versions[0].id)",
-									""
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"API Versions returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.versions.length).to.be.greaterThan(0);",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -238,7 +282,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"console.log(\"SCHEMA: \" + pm.collectionVariables.get(\"string_schema\"));"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -250,7 +294,15 @@
 									"const jsonData = pm.response.json();",
 									"",
 									"// Set the UID_schema in the env variable",
-									"pm.collectionVariables.set('UID_schema', jsonData.schema.id)"
+									"pm.collectionVariables.set('UID_schema', jsonData.schema.id)",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Schema is not undefined\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.schema).not.to.be.undefined;",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -267,7 +319,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"schema\": {\n\t\t\"language\": \"{{schemaLanguage}}\",\n\t\t\"schema\":\"{{string_schema}}\",\n\t\t\"type\": \"openapi3\"\n\t}\n}"
+							"raw": "{\n    \"schema\":{\n       \"language\":\"yaml\",\n       \"schema\": \"openapi: 3.0.0\\r\\ninfo:\\r\\n  title: Cat Fact API\\r\\n  contact:\\r\\n    email: contact@catfact.ninja\\r\\n  version: 1.0.0\\r\\nservers: \\r\\n  - url: https:\\/\\/f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io\\r\\n    description: Postman mock\\r\\n  - url: https:\\/\\/catfact.ninja\\r\\n    description: prod\\r\\npaths:\\r\\n  \\/breeds:\\r\\n    get:\\r\\n      tags:\\r\\n        - Breeds\\r\\n      description: Returns a a list of breeds\\r\\n      operationId: getBreeds\\r\\n      parameters:\\r\\n        - name: limit\\r\\n          in: query\\r\\n          description: This is a description\\r\\n          required: false\\r\\n          schema:\\r\\n            type: integer\\r\\n            format: int64\\r\\n            default: 2\\r\\n      responses:\\r\\n        '200':\\r\\n          description: Normal operation\\r\\n          content:\\r\\n            application\\/json:\\r\\n              schema:\\r\\n                type: array\\r\\n                items:\\r\\n                  $ref: '#\\/components\\/schemas\\/Breed'\\r\\n  \\/fact:\\r\\n    get:\\r\\n      tags:\\r\\n        - Facts\\r\\n      description: Returns a random fact\\r\\n      operationId: getRandomFact\\r\\n      parameters:\\r\\n        - name: max_length\\r\\n          in: query\\r\\n          description: maximum length of returned fact\\r\\n          required: false\\r\\n          schema:\\r\\n            type: integer\\r\\n            format: int64\\r\\n            default: 200\\r\\n      responses:\\r\\n        '200':\\r\\n          description: Normal response\\r\\n          content:\\r\\n            application\\/json:\\r\\n              schema:\\r\\n                $ref: '#\\/components\\/schemas\\/CatFact'\\r\\n        '404':\\r\\n          description: Fact not found\\r\\n  \\/facts:\\r\\n    get:\\r\\n      tags:\\r\\n        - Facts\\r\\n      summary: Get a list of facts\\r\\n      description: Returns a a list of facts\\r\\n      operationId: getFacts\\r\\n      parameters:\\r\\n        - name: max_length\\r\\n          in: query\\r\\n          required: false\\r\\n          schema:\\r\\n            type: integer\\r\\n            format: int64\\r\\n            default: 200\\r\\n        - name: limit\\r\\n          in: query\\r\\n          description: limit the amount of results returned\\r\\n          required: false\\r\\n          schema:\\r\\n            type: integer\\r\\n            format: int64\\r\\n            default: 2\\r\\n      responses:\\r\\n        '200':\\r\\n          description: successful operation\\r\\n          content:\\r\\n            application\\/json:\\r\\n              schema:\\r\\n                type: array\\r\\n                items:\\r\\n                  $ref: '#\\/components\\/schemas\\/CatFact'\\r\\ncomponents:\\r\\n  schemas:\\r\\n    Breed:\\r\\n      title: Breed model\\r\\n      description: Breed\\r\\n      properties:\\r\\n        breed:\\r\\n          title: Breed\\r\\n          description: Breed\\r\\n          type: string\\r\\n          format: string\\r\\n        country:\\r\\n          title: Country\\r\\n          description: Country\\r\\n          type: string\\r\\n          format: string\\r\\n        origin:\\r\\n          title: Origin\\r\\n          description: Origin\\r\\n          type: string\\r\\n          format: string\\r\\n        coat:\\r\\n          title: Coat\\r\\n          description: Coat\\r\\n          type: string\\r\\n          format: string\\r\\n        pattern:\\r\\n          title: Pattern\\r\\n          description: Pattern\\r\\n          type: string\\r\\n          format: string\\r\\n      type: object\\r\\n    CatFact:\\r\\n      title: CatFact model\\r\\n      description: CatFact\\r\\n      properties:\\r\\n        fact:\\r\\n          title: Fact\\r\\n          description: Fact\\r\\n          type: string\\r\\n          format: string\\r\\n        length:\\r\\n          title: Length\\r\\n          description: Length\\r\\n          type: integer\\r\\n          format: int32\\r\\n          default: 200\\r\\n      type: object\\r\\ntags:\\r\\n  - name: Facts\\r\\n    description: Cat Facts\\r\\n  - name: Breeds\\r\\n    description: Breeds\\r\\nsecurity:\\r\\n  - {}\",\n       \"type\":\"openapi3\"\n    }\n }"
 						},
 						"url": {
 							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/schemas",
@@ -307,8 +359,18 @@
 								"exec": [
 									"const jsonData = pm.response.json();",
 									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Collection is not undefined\", function () { ",
+									"    pm.expect(jsonData.collection).not.to.be.undefined;",
+									"});",
+									"",
 									"// Set the colllectionId in the env variable",
-									"pm.collectionVariables.set('UID_collection', jsonData.collection.uid)",
+									"pm.collectionVariables.set('UID_collection', jsonData.collection.uid);",
+									"",
+									"",
 									""
 								],
 								"type": "text/javascript"
@@ -378,6 +440,15 @@
 								"exec": [
 									"const jsonData = pm.response.json();",
 									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Mock is not undefined\", function () { ",
+									"    pm.expect(jsonData.mock).not.to.be.undefined;",
+									"});",
+									"",
+									"",
 									"// Set the URL_mock in the env variable",
 									"pm.collectionVariables.set('URL_mock', jsonData.mock.mockUrl);",
 									"pm.collectionVariables.set('UID_mock', jsonData.mock.id);",
@@ -439,6 +510,15 @@
 								"exec": [
 									"const jsonData = pm.response.json();",
 									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Environment is not undefined\", function () { ",
+									"    pm.expect(jsonData.environment).not.to.be.undefined;",
+									"});",
+									"",
+									"",
 									"// Set the environmentID in the env variable",
 									"pm.collectionVariables.set('UID_environment', jsonData.environment.uid);"
 								],
@@ -498,6 +578,15 @@
 								"exec": [
 									"const jsonData = pm.response.json();",
 									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Monitor is not undefined\", function () { ",
+									"    pm.expect(jsonData.monitor).not.to.be.undefined;",
+									"});",
+									"",
+									"",
 									"// Set the environmentID in the env variable",
 									"pm.collectionVariables.set('UID_monitor', jsonData.monitor.uid)"
 								],
@@ -550,6 +639,32 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Mock relation created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.mock).not.to.be.undefined;",
+									"});",
+									"",
+									"pm.test(\"Monitor relation created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.monitor).not.to.be.undefined;",
+									"});",
+									"",
+									"pm.test(\"Environment relation created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.environment).not.to.be.undefined;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -562,7 +677,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"mock\" : [\"{{UID_mock}}\"],\n    \"monitor\": [\"{{UID_monitor}}\"],\n    \"environment\" : [\"{{UID_environment}}\"],\n    \"test\" : [\"{{UID_collection}}\"]\n    \n}",
+							"raw": "{\n\t\"mock\" : [\"{{UID_mock}}\"],\n    \"monitor\": [\"{{UID_monitor}}\"],\n    \"environment\" : [\"{{UID_environment}}\"]\n    \n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -616,28 +731,20 @@
 			"name": "Reset",
 			"item": [
 				{
-					"name": "Delete Collection",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "https://api.getpostman.com/collections/{{UID_collection}}",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"collections",
-								"{{UID_collection}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Delete environment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -659,6 +766,19 @@
 				},
 				{
 					"name": "Delete Mock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -679,30 +799,20 @@
 					"response": []
 				},
 				{
-					"name": "Delete API Version",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}",
-							"protocol": "https",
-							"host": [
-								"api",
-								"getpostman",
-								"com"
-							],
-							"path": [
-								"apis",
-								"{{UID_API}}",
-								"versions",
-								"{{UID_apiVersion}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Delete Monitor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -723,7 +833,54 @@
 					"response": []
 				},
 				{
+					"name": "Delete Collection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/collections/{{UID_collection}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"collections",
+								"{{UID_collection}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -769,7 +926,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/testsuite",
+							"raw": "https://api.getpostman.com/collections/5e14ccbf-4e64-40f4-9a3b-e74c409840dd",
 							"protocol": "https",
 							"host": [
 								"api",
@@ -777,11 +934,8 @@
 								"com"
 							],
 							"path": [
-								"apis",
-								"{{UID_API}}",
-								"versions",
-								"{{UID_apiVersion}}",
-								"testsuite"
+								"collections",
+								"5e14ccbf-4e64-40f4-9a3b-e74c409840dd"
 							]
 						}
 					},
@@ -818,6 +972,139 @@
 							"path": [
 								"mocks",
 								"{{UID_mock}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All API Relations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{apiId}}/versions/{{apiVersionId}}/relations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{apiId}}",
+								"versions",
+								"{{apiVersionId}}",
+								"relations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{apiVersionId}}/testsuite",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/monitor",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								"monitor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Synch",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://api.getpostman.com/apis/{{UID_API}}/versions/{{UID_apiVersion}}/:relationType/:entityId/syncWithSchema",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"apis",
+								"{{UID_API}}",
+								"versions",
+								"{{UID_apiVersion}}",
+								":relationType",
+								":entityId",
+								"syncWithSchema"
+							],
+							"variable": [
+								{
+									"key": "relationType",
+									"value": "mock"
+								},
+								{
+									"key": "entityId",
+									"value": "431c87ea-3574-40c4-bf6c-0820b4fd8eaa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update workspace",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"workspace\": {\n        \"name\": \"BRKC Targety-doo\"    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.getpostman.com/workspaces/9c149a23-8d3b-446d-ac64-af399511f284",
+							"protocol": "https",
+							"host": [
+								"api",
+								"getpostman",
+								"com"
+							],
+							"path": [
+								"workspaces",
+								"9c149a23-8d3b-446d-ac64-af399511f284"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "escape YAML",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
 							]
 						}
 					},
@@ -910,7 +1197,7 @@
 		},
 		{
 			"key": "GitHubSchemaFilename",
-			"value": "catfacts.json",
+			"value": "index.yaml",
 			"type": "string"
 		},
 		{
@@ -919,7 +1206,7 @@
 			"type": "string"
 		},
 		{
-			"key": "string_schema",
+			"key": "Schema",
 			"value": "",
 			"type": "string"
 		},
@@ -949,20 +1236,20 @@
 		},
 		{
 			"key": "UID_mock",
-			"value": "<<set at runtime>>"
+			"value": ""
 		},
 		{
 			"key": "URL_mock",
-			"value": "<<set at runtime>>",
+			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "UID_environment",
-			"value": "<<set at runtime>>"
+			"value": ""
 		},
 		{
 			"key": "UID_monitor",
-			"value": "<<set at runtime>>"
+			"value": ""
 		},
 		{
 			"key": "randomInt",
@@ -971,6 +1258,21 @@
 		{
 			"key": "schemaLanguage",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "Workspace_name",
+			"value": "Partner workspace",
+			"type": "string"
+		},
+		{
+			"key": "Workspace_description",
+			"value": "A partner workspace",
+			"type": "string"
+		},
+		{
+			"key": "Workspace_type",
+			"value": "partner",
 			"type": "string"
 		}
 	]
