@@ -5,7 +5,7 @@ info:
     email: contact@catfact.ninja
   version: 1.0.0
 servers: 
-  - url: https://2871408e-403f-4fbb-a7f6-783c7882828b.mock.pstmn.io
+  - url: https://f653ab18-2f67-42d4-9ac2-d404779d7b24.mock.pstmn.io
     description: Postman mock
   - url: https://catfact.ninja
     description: prod
@@ -24,6 +24,7 @@ paths:
           schema:
             type: integer
             format: int64
+            default: 2
       responses:
         '200':
           description: Normal operation
@@ -47,7 +48,7 @@ paths:
           schema:
             type: integer
             format: int64
-            default: 10
+            default: 200
       responses:
         '200':
           description: Normal response
@@ -71,6 +72,7 @@ paths:
           schema:
             type: integer
             format: int64
+            default: 200
         - name: limit
           in: query
           description: limit the amount of results returned
@@ -78,6 +80,7 @@ paths:
           schema:
             type: integer
             format: int64
+            default: 2
       responses:
         '200':
           description: successful operation
@@ -133,6 +136,7 @@ components:
           description: Length
           type: integer
           format: int32
+          default: 200
       type: object
 tags:
   - name: Facts
