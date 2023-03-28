@@ -1,0 +1,11 @@
+ /names:
+    get:
+      description: Suggests a name for a cat
+      operationId: getName
+      responses:
+        '200':
+          description: Normal operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatName'
