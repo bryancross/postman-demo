@@ -5,12 +5,12 @@ info:
     email: contact@catfact.ninja
   version: 1.0.0
 servers: 
-  - url: https://af0eda6e-cb76-4f14-b52f-8a0f9c6f26c4.mock.pstmn.io
+  - url: https://0a6330ac-e192-4e7d-97e1-3b974153a481.mock.pstmn.io
     description: Postman mock
   - url: https://catfact.ninja
     description: prod
 paths:
-  /breeds:
+  /breeds/:
     get:
       tags:
         - Breeds
@@ -34,7 +34,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Breed'
-  /fact:
+  /fact/:
     get:
       tags:
         - Facts
@@ -126,7 +126,7 @@ components:
       title: CatFact model
       description: CatFact
       properties:
-        name:
+        fact:
           title: Fact
           description: Fact
           type: string
@@ -153,5 +153,5 @@ tags:
     description: Cat Facts
   - name: Breeds
     description: Breeds
-#security:
-#    - CatAPIKey: []            
+security:
+    - CatAPIKey: []            

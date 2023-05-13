@@ -1,4 +1,4 @@
- /names:
+/name:
     get:
       description: Suggests a name for a cat
       operationId: getName
