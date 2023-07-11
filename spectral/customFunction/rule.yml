@@ -1,0 +1,9 @@
+version-check:
+  description: Ensures that we are using "3.0.0" as the version.
+  message: Your version is not "3.0.0".
+  given: $.openapi
+  severity: hint
+  formats:
+    - oas3
+  then:
+    function: version_test

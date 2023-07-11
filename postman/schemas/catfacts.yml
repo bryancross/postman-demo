@@ -91,6 +91,10 @@ paths:
                 items:
                   $ref: '#/components/schemas/CatFact'
 components:
+  securitySchemes:
+    testAuth:
+      type: http
+      scheme: basic
   schemas:
     Breed:
       title: Breed model
@@ -154,4 +158,4 @@ tags:
   - name: Breeds
     description: Breeds
 security:
-    - CatAPIKey: []            
+   - testAuth: []            
