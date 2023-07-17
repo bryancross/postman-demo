@@ -157,5 +157,5 @@ tags:
     description: Cat Facts
   - name: Breeds
     description: Breeds
-security:
-   - testAuth: []            
+#security:
+#   - testAuth: []            
