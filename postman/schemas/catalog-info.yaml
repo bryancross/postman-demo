@@ -6,6 +6,6 @@ metadata:
 spec:
   type: openapi
   lifecycle: production
-  owner: bryan.cross@postman.com
+  owner: guests
   definition:
     $text: ./catfacts.yml
