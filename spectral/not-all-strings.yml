@@ -1,0 +1,20 @@
+rules:
+  not-all-strings:
+    description: Not all properties in a schema should be strings.
+    severity: warn
+    given: $..[?(@.type == "object" && @.properties)]
+    then:
+      field: properties
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          not:
+            patternProperties:
+              "^.*$":
+                type: object
+                properties:
+                  type:
+                      const: string
+                  format: false
+                additionalProperties: true
