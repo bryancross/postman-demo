@@ -1,0 +1,12 @@
+/weight:
+    get:
+      description: Suggests a name for a cat
+      operationId: getWeight
+      responses:
+        '200':
+          description: Normal operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatWeight'   
+  
