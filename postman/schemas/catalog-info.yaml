@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: catfact-longterm
+  annotations:
+    github.com/project-slug: bidnessforb/catfact-longterm
+spec:
+  type: other
+  lifecycle: unknown
+  owner: guests
