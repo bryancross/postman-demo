@@ -3,6 +3,7 @@ kind: API
 metadata:
   name: catfacts
   description: Catfacts service API
+  title: Catfacts API for Catfacts Facts Service
 spec:
   type: openapi
   lifecycle: production
