@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: postman-demo
+  annotations:
+    github.com/project-slug: bryancross/postman-demo
+spec:
+  type: other
+  lifecycle: unknown
+  owner: guests
