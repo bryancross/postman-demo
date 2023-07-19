@@ -8,4 +8,4 @@ spec:
   lifecycle: production
   owner: bryan.cross@postman.com
   definition:
-    $text: https://github.com/bryancross/postman-demo/blob/main/postman/schemas/catfacts.yml
+    $text: ./catfacts.yml
